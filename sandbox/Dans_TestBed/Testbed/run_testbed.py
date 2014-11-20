@@ -9,6 +9,9 @@ sys.path.append('../')
 
 import vtk
 
+import time
+from ovrsdk import *
+
 from MenuItem import MenuItem
 from MenuItemController import MenuItemController
 
@@ -23,20 +26,22 @@ class MenuViewModel():
 if __name__ == '__main__':
     
     # A renderer and render window
-    renderer = vtk.vtkRenderer()
+    renderWindenInteracterList = []
+    #renderer = vtk.vtkRenderer()
     renderWindow = vtk.vtkRenderWindow()
-    renderWindow.AddRenderer(renderer)
+    #renderWindow.AddRenderer(renderer)
     
     # Make it a little bigger than default
-    renderWindow.SetSize(1280, 480)
+    renderWindow.SetSize(1920, 1080)
     
     #renderWindow.HideCursor()
     
-    renderWindow.StereoCapableWindowOn()
-    renderWindow.SetStereoTypeToSplitViewportHorizontal()
+    #renderWindow.StereoCapableWindowOn()
+    #renderWindow.SetStereoTypeToRedBlue()
+    #renderWindow.SetStereoTypeToSplitViewportHorizontal()
     
     #activates stereo by default. Press '3' to toggle stereo
-    renderWindow.StereoRenderOn()
+    #renderWindow.StereoRenderOn()
     
     #may need to use to alter eye angle
     #renderer.GetActiveCamera().SetEyeAngle(number)
@@ -45,19 +50,51 @@ if __name__ == '__main__':
     renderWindowInteractor = vtk.vtkRenderWindowInteractor()
     renderWindowInteractor.SetRenderWindow(renderWindow)
     
-    #Create a sphere
-    sphereSource = vtk.vtkSphereSource()
-    sphereSource.SetCenter(0.0, 0.0, 0.0)
-    sphereSource.SetRadius(5)
+    xmins = [0.0, 0.5, 0.0, 0.5]
+    xmaxs = [0.5, 1.0, 0.5, 1.0]
+    ymins = [0.0, 0.0, 0.5, 0.5]
+    ymaxs = [1.0, 1.0, 1.0, 1.0]
+    
+    for i in range(2):
+        renderer = vtk.vtkRenderer()
+        renderWindow.AddRenderer(renderer)
+        renderer.SetViewport(xmins[i], ymins[i], xmaxs[i], ymaxs[i])
+        
+        #Create a sphere
+        sphereSource = vtk.vtkSphereSource()
+        sphereSource.SetCenter(0.0, 0.0, 0.0)
+        sphereSource.SetRadius(5)
  
-    #Create a mapper and actor
-    mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputConnection(sphereSource.GetOutputPort())
-    actor = vtk.vtkActor()
-    actor.SetMapper(mapper)
-    renderer.AddActor(actor)
-    #renderer.Camera.SetEyeAngle(65)
-    #renderer.ResetCamera()
+        #Create a mapper and actor
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputConnection(sphereSource.GetOutputPort())
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+        renderer.AddActor(actor)
+        renderer.ResetCamera()
+    
+    ovr_Initialize()
+    hmd = ovrHmd_Create(0)
+    hmdDesc = ovrHmdDesc()
+    ovrHmd_GetDesc(hmd, byref(hmdDesc))
+    print hmdDesc.ProductName
+    ovrHmd_StartSensor( \
+        hmd, 
+        ovrSensorCap_Orientation | 
+        ovrSensorCap_YawCorrection, 
+        0
+        )
+
+    while True:
+        ss = ovrHmd_GetSensorState(hmd, ovr_GetTimeInSeconds())
+        pose = ss.Predicted.Pose
+        print "%10f   %10f   %10f   %10f" % ( \
+            pose.Orientation.w, 
+            pose.Orientation.x, 
+            pose.Orientation.y, 
+            pose.Orientation.z
+            )
+        time.sleep(0.016)
     
     #Menu = MenuItemController(renderer, renderWindowInteractor, "UserMenu")
     
