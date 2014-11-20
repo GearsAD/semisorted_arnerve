@@ -1,0 +1,16 @@
+package semisorted_arnerve;
+
+//A frame for a single user.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct user_update_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+
+	string name;
+	int8_t role;
+
+	// All the small things, true dares... etc.
+	kinect_update_t kinect;
+	oculus_update_t oculus;
+	wearable_update_t wearable;
+}
