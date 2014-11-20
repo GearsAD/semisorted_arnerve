@@ -1,0 +1,44 @@
+package semisorted_arnerve;
+
+// A simple template for a kinect joint
+struct kinect_joint_t
+{
+	double position[3];
+	double orientation[3];
+}
+
+struct kinect_rawdata_t
+{
+	// Depth and rgb images
+	int32_t NUMIMAGEBYTES;
+	byte imagejpg_rgb[NUMIMAGEBYTES];
+	byte imagejpg_depth[NUMIMAGEBYTES];
+	// The raw joints	
+	int32_t NUMJOINTS;
+	kinect_joint_t bodyjoints[NUMJOINTS];	
+}
+
+//A frame for the bot info which will be transferred to the vtkGUI.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct kinect_update_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+
+	// The torso information (root node)
+	double torsoposition[3];
+	double forwardvec[3];
+	double rightvec[3];
+
+	// Information about the hands
+	bool is_rhandclosed;
+	bool is_lhandclosed;
+	double rhandposition[3];
+	double lhandposition[3];
+
+	// The head orientation
+	double headorientation[3];
+	double headposition[3];
+
+	// The raw data frame
+	kinect_rawdata_t rawkinectdata;		
+}

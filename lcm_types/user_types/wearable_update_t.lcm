@@ -1,0 +1,29 @@
+package semisorted_arnerve;
+
+//A frame for a single joystick
+struct joystick_update_t
+{
+	//The name of the joystick
+	string name;
+	//The joystick state
+	int8_t numAxes;
+	int32_t axes[numAxes];
+	int8_t numButtons;
+	boolean buttons[numButtons];
+	int8_t numHats;
+	int16_t hats[numHats];
+}
+
+//A frame for the user information (Peregrine + Xbox controller + possibly camera)
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct wearable_update_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+
+	//The keys that are pressed (the Peregrine)
+	int8_t numKeysDown;
+	int16_t keysPressed[numKeysDown];	
+
+	//The joysticks that are sampled (the Xbox controller)
+	joystick_update_t joystick;
+}
