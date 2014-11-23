@@ -56,8 +56,8 @@ if __name__ == '__main__':
 
     axes = Axes.Axes(render.renderers)
     
-    Menu = MenuItemController.MenuItemController(render.renderers, render.renderWindowInteractor, "UserMenu")
-    Menu.BuildTestMenu()
+    #Menu = MenuItemController.MenuItemController(render.renderers, render.renderWindowInteractor, "UserMenu")
+    #Menu.BuildTestMenu()
     
     render.renderWindowInteractor.Start()
     

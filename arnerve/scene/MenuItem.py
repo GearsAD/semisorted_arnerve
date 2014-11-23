@@ -12,19 +12,16 @@ class MenuItem(SceneObject):
     
     def __init__(self, renderers, screenDistance, width, height, parent, name, image, callbackObject = None, callbackFunction = None):
         
-        #renderer.AddObserver("LeftButtonPressEvent", self._OnButtonPress)
-        
         super(MenuItem, self).__init__(renderers)
         
         self.isOpen = False
         self.isVisible = False
         
-        self.menuItemTexture = "../Testbed/media/semisortedcameralogo.png"
+        self.menuItemTexture = "../scene/media/semisortedcameralogo.png"
         #self.menuItemTexture = image
         
         self.menuItemCenter = [0.0, 0.0, 0.0]
         self.menuItemPadding = [0.0, 0.0, 0.0, 0.0]
-        self.menuItemPosition = [0, 0, 0]
         self.childMenuItems = []
         self.parent = parent
         self.name = name
@@ -60,16 +57,16 @@ class MenuItem(SceneObject):
         # Create the 3D text and the associated mapper and follower (a type of
         # actor).  Position the text so it is displayed over the origin of the
         # axes.
-        atext = vtk.vtkVectorText()
-        atext.SetText(name)
-        textMapper = vtk.vtkPolyDataMapper()
-        textMapper.SetInputConnection(atext.GetOutputPort())
-        self.textActor = vtk.vtkFollower()
-        self.textActor.SetMapper(textMapper)
-        self.textActor.SetScale(0.2, 0.2, 0.2)
-        self.textActor.AddPosition(0, -0.1, 0)
-        for item in renderers:
-            item.AddActor(self.textActor)
+        #atext = vtk.vtkVectorText()
+        #atext.SetText(name)
+        #textMapper = vtk.vtkPolyDataMapper()
+        #textMapper.SetInputConnection(atext.GetOutputPort())
+        #self.textActor = vtk.vtkFollower()
+        #self.textActor.SetMapper(textMapper)
+        #self.textActor.SetScale(0.2, 0.2, 0.2)
+        #self.textActor.AddPosition(0, -0.1, 0)
+        #for item in renderers:
+        #    item.AddActor(self.textActor)
         
         if parent is not None:
             parent.AddMenuItem(self)
@@ -91,9 +88,7 @@ class MenuItem(SceneObject):
         
         position = self.vtkActor.GetPosition()
         
-        self.menuItemPosition[0] = position[0]
-        self.menuItemPosition[1] = position[1]
-        self.menuItemPosition[2] = position[2]
+        self.SetPosition(position)
         
     def __str__(self):
         s = "Name : " + self.GetName() + "\n"
@@ -171,10 +166,11 @@ class MenuItem(SceneObject):
         self.menuItemPadding = padding
     
     def SetPosition(self, position):
-        self.menuItemPosition = position
-        self.vtkActor.SetPosition(self.menuItemPosition)
+        self.relativePosition = position
+#         self.menuItemPosition = position
+#         self.vtkActor.SetPosition(self.menuItemPosition)
         #Move the text
-        self.textActor.SetPosition(self.menuItemPosition)
+        #self.textActor.SetPosition(self.menuItemPosition)
         
     def SetName(self, name):
         self.name = name
@@ -212,12 +208,13 @@ class MenuItem(SceneObject):
                     item.SetVisible(False)
     
     def SetParentMenuItemPositions(self, newPosition):
-        self.SetPosition(newPosition)
+        #self.SetPosition(newPosition)
+        self.parent.SetPositionVec3(newPosition)
         if self.parent is not None:
             position = [newPosition[0], newPosition[1], newPosition[2]]
             position[0] += -(self.GetWidth() / 2) - (self.parent.GetWidth() / 2)
-            position[1] = 0.0
-            position[2] = self.GetDepth()
+            position[1] += 0.0
+            position[2] += self.GetDepth()
             self.parent.SetParentMenuItemPositions(position)
     
     def SetChildMenuItemPositions(self):
@@ -227,12 +224,13 @@ class MenuItem(SceneObject):
                 totalHeight += item.GetHeight()
             totalHeight = totalHeight / 2
             for item in self.childMenuItems:
-                position = [0.0, 0.0, 0.0]
-                position[0] = (item.GetWidth() / 2) + (item.parent.GetWidth() / 2)
-                position[1] = totalHeight - (item.GetHeight() / 2)
-                position[2] = item.parent.GetDepth()
+                #position = [0.0, 0.0, 0.0]
+                position = self.relativePosition
+                position[0] += (item.GetWidth() / 2) + (item.parent.GetWidth() / 2)
+                position[1] += totalHeight - (item.GetHeight() / 2)
+                position[2] += item.parent.GetDepth()
                 totalHeight -= item.GetHeight()
-                item.SetPosition(position)
+                item.SetPositionVec3(position)
     
     def GlobalMenuClose(self):
         if self.GetChildCount() > 0:

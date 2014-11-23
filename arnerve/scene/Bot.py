@@ -60,13 +60,13 @@ class Bot(SceneObject):
         '''
         # Create a camera screen and set the child's offset.
         self.camScreen = CameraScreen.CameraScreen(renderer, 3, 4, 3)
-        self.camScreen.childPositionOffset = [0, 2.5, 0]
+        self.camScreen.relativePosition = [0, 2.5, 0]
         # Add it to the bot's children
         self.childrenObjects.append(self.camScreen)
          
         # Create the LIDAR template and set it to the child's offset as well         
         self.lidar = LIDAR.LIDAR(renderer, -90, 90, 180, -22.5, 22.5, 45, 5, 15, 5)
-        self.lidar.childPositionOffset = [0, 2.5, 0]
+        self.lidar.relativePosition = [0, 2.5, 0]
         # Add it to the bot's children
         self.childrenObjects.append(self.lidar)
         

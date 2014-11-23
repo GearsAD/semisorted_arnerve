@@ -19,9 +19,9 @@ class SceneObject(object):
         # The children SceneObjects for this SceneObject - both rotationally and positionally bound to the parent 
         self.childrenObjects = []
         # The positional offset of this object if it is a child 
-        self.childPositionOffset = [0, 0, 0]
+        self.relativePosition = [0, 0, 0]
         # The rotational offset of this object if it is a child
-        self.childRotationalOffset = [0, 0, 0]
+        self.relativeRotation = [0, 0, 0]
         # The actor
         # Ref - http://www.vtk.org/doc/nightly/html/classvtkActor.html
         self.vtkActor = vtk.vtkActor()
@@ -35,9 +35,9 @@ class SceneObject(object):
         # Update all the children
         for sceneObject in self.childrenObjects:
             newLoc = [0, 0, 0]
-            newLoc[0] = positionVec3[0] + sceneObject.childPositionOffset[0]
-            newLoc[1] = positionVec3[1] + sceneObject.childPositionOffset[1]
-            newLoc[2] = positionVec3[2] + sceneObject.childPositionOffset[2]
+            newLoc[0] = positionVec3[0] + sceneObject.relativePosition[0]
+            newLoc[1] = positionVec3[1] + sceneObject.relativePosition[1]
+            newLoc[2] = positionVec3[2] + sceneObject.relativePosition[2]
             sceneObject.SetPositionVec3(newLoc)
     
     def GetPositionVec3(self):
@@ -48,9 +48,9 @@ class SceneObject(object):
         # Update all the children
         for sceneObject in self.childrenObjects:
             newOr = [0, 0, 0]
-            newOr[0] = orientationVec3[0] + sceneObject.childRotationalOffset[0]
-            newOr[1] = orientationVec3[1] + sceneObject.childRotationalOffset[1]
-            newOr[2] = orientationVec3[2] + sceneObject.childRotationalOffset[2]
+            newOr[0] = orientationVec3[0] + sceneObject.relativeRotation[0]
+            newOr[1] = orientationVec3[1] + sceneObject.relativeRotation[1]
+            newOr[2] = orientationVec3[2] + sceneObject.relativeRotation[2]
             sceneObject.SetOrientationVec3(newOr)
     
     def GetOrientationVec3(self):

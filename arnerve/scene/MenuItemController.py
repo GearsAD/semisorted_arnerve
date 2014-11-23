@@ -115,10 +115,11 @@ class MenuItemController(SceneObject):
                 totalHeight += item.GetHeight()
             totalHeight = totalHeight / 2
             for item in self.menuItemList:
-                position = [0.0, 0.0, 0.0]
-                position[0] = 0.0
-                position[1] = totalHeight - (item.GetHeight() / 2)
-                position[2] = item.GetDepth()
+                #position = [0.0, 0.0, 0.0]
+                position = self.relativePosition
+                position[0] += 0.0
+                position[1] += totalHeight - (item.GetHeight() / 2)
+                position[2] += item.GetDepth()
                 totalHeight -= item.GetHeight()
                 item.SetPosition(position)
             
@@ -132,7 +133,8 @@ class MenuItemController(SceneObject):
             item.CloseMenuItem()
         self.selectedNode.OpenMenuItem()
         self.selectedNode.CloseUnselectedMenuItems()
-        self.selectedNode.SetParentMenuItemPositions([0.0, 0.0, 0.0])
+        #self.selectedNode.SetParentMenuItemPositions([0.0, 0.0, 0.0])
+        self.selectedNode.SetParentMenuItemPositions(self.relativePosition)
         self.selectedNode.SetChildMenuItemPositions()
         #if len(self.selectedNode.GetChildCount) <= 0:
         

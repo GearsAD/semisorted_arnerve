@@ -9,14 +9,8 @@ import sys
 import vtk
 
 class RenderManager(object):
-    '''
-    classdocs
-    '''
 
     def __init__(self, name, device, width, height, stereo):
-        '''
-        Constructor
-        '''
         self.name = name
         self.device = device
         self.width = width
@@ -35,8 +29,6 @@ class RenderManager(object):
             return
         if self.stereo == False:
             self.rendererCenter = vtk.vtkRenderer()
-            #camera = self.rendererCenter.GetActiveCamera()
-            #camera.Stereo(1)
             self.renderers.append(self.rendererCenter)
             return
         
@@ -51,9 +43,16 @@ class RenderManager(object):
         
     def __InitializeRenderWindowInteractor(self):
         self.renderWindowInteractor.Initialize()
+    
+    def __CreateRenderLoop(self, frequency):
+        self.renderObserverId = self.renderWindowInteractor.AddObserver('TimerEvent', self.__3DRenderingLoop)
+        self.__3DViewLoopTimerId = self.renderWindowInteractor.CreateRepeatingTimer(30)
+    
+    def __3DRenderingLoop(self, obj, event):
+        iren = obj
+        iren.GetRenderWindow().Render()
         
     def Initialize(self):
-        
         try:
             self.__CreateRenderer()
         except:
@@ -72,9 +71,9 @@ class RenderManager(object):
         if self.device == "Display":
             self.__InitDisplay(self.width, self.height)
         elif self.device == "Oculus":
-            self.__InitOculus()
+            self.__InitOculus(self.width, self.height)
         elif self.device == "Wrap920":
-            self.__InitWrap920()
+            self.__InitWrap920(self.width, self.height)
         else: 
             raise Exception("You have not selected a valid display type - Display, Oculus, or Wrap920.")
         
@@ -82,11 +81,11 @@ class RenderManager(object):
             self.__InitializeRenderWindowInteractor()
         except:
             print "Unexpected error:", sys.exc_info()[0]
-        
-        # Sign up to receive TimerEvent for the timed rendering loop
-        self.renderObserverId = self.renderWindowInteractor.AddObserver('TimerEvent', self.__3DRenderingLoop)
-        
-        self.__3DViewLoopTimerId = self.renderWindowInteractor.CreateRepeatingTimer(30)
+            
+        try:
+            self.__CreateRenderLoop(10)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
         
     def Shutdown(self):
         # Once done, remove the timer to clean up just to be neat
@@ -94,37 +93,11 @@ class RenderManager(object):
         self.interactor.RemoveObserver(self.renderObserverId)
         
     def __InitDisplay(self, width, height):
-        
-            # A renderer and render window
-            #self.renderer = vtk.vtkRenderer()
-            #self.renderWindow = vtk.vtkRenderWindow()
-            #self.renderWindow.AddRenderer(self.renderer)
-            
-            # Make it a little bigger than default
-            self.renderWindow.SetSize(width, height)
-        
-            # An interactor
-            #self.renderWindowInteractor = vtk.vtkRenderWindowInteractor()
-            #self.renderWindowInteractor.SetRenderWindow(self.renderWindow)
-        
-        # Create a mapper
-        #self.mapper = vtk.vtkPolyDataMapper()
-
-        # Create actor
-        #self.actor = vtk.vtkActor()
-        #self.actor.SetMapper(self.mapper)
-
+        self.renderWindow.SetSize(width, height)
     
-    def __InitOculus(self):
-        i = 0
+    def __InitOculus(self, width, height):
+        self.renderWindow.SetSize(width, height)
         
-    def __InitWrap920(self):
-        i = 0
-        
-    def __3DRenderingLoop(self, obj, event):
-        '''
-        Main loop for rendering at a constant ~30Hz
-        '''
-        iren = obj
-        iren.GetRenderWindow().Render()
+    def __InitWrap920(self, width, height):
+        self.renderWindow.SetSize(width, height)
     
