@@ -16,8 +16,8 @@ namespace semisorted_arnerve
         public double[] torsoposition;
         public double[] forwardvec;
         public double[] rightvec;
-        public semisorted_arnerve.bool is_rhandclosed;
-        public semisorted_arnerve.bool is_lhandclosed;
+        public byte is_rhandclosed;
+        public byte is_lhandclosed;
         public double[] rhandposition;
         public double[] lhandposition;
         public double[] headorientation;
@@ -36,7 +36,7 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0xfb7315ec0b92ddfaL;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0xdcf75cea98213945L;
  
         static kinect_update_t()
         {
@@ -50,8 +50,6 @@ namespace semisorted_arnerve
  
             classes.Add("semisorted_arnerve.kinect_update_t");
             ulong hash = LCM_FINGERPRINT_BASE
-                 + semisorted_arnerve.bool._hashRecursive(classes)
-                 + semisorted_arnerve.bool._hashRecursive(classes)
                  + semisorted_arnerve.kinect_rawdata_t._hashRecursive(classes)
                 ;
             classes.RemoveAt(classes.Count - 1);
@@ -80,9 +78,9 @@ namespace semisorted_arnerve
                 outs.Write(this.rightvec[a]); 
             }
  
-            this.is_rhandclosed._encodeRecursive(outs); 
+            outs.Write(this.is_rhandclosed); 
  
-            this.is_lhandclosed._encodeRecursive(outs); 
+            outs.Write(this.is_lhandclosed); 
  
             for (int a = 0; a < 3; a++) {
                 outs.Write(this.rhandposition[a]); 
@@ -142,9 +140,9 @@ namespace semisorted_arnerve
                 this.rightvec[a] = ins.ReadDouble();
             }
  
-            this.is_rhandclosed = semisorted_arnerve.bool._decodeRecursiveFactory(ins);
+            this.is_rhandclosed = ins.ReadByte();
  
-            this.is_lhandclosed = semisorted_arnerve.bool._decodeRecursiveFactory(ins);
+            this.is_lhandclosed = ins.ReadByte();
  
             this.rhandposition = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
@@ -190,9 +188,9 @@ namespace semisorted_arnerve
                 outobj.rightvec[a] = this.rightvec[a];
             }
  
-            outobj.is_rhandclosed = this.is_rhandclosed.Copy();
+            outobj.is_rhandclosed = this.is_rhandclosed;
  
-            outobj.is_lhandclosed = this.is_lhandclosed.Copy();
+            outobj.is_lhandclosed = this.is_lhandclosed;
  
             outobj.rhandposition = new double[(int) 3];
             for (int a = 0; a < 3; a++) {

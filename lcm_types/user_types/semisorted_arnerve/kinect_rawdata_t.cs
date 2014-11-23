@@ -23,7 +23,7 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x15a044367fd34a52L;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x83f3c2f97d2f262dL;
  
         static kinect_rawdata_t()
         {

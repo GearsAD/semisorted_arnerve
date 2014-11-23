@@ -16,7 +16,7 @@ namespace semisorted_arnerve
         public byte numAxes;
         public int[] axes;
         public byte numButtons;
-        public bool[] buttons;
+        public byte[] buttons;
         public byte numHats;
         public short[] hats;
  
@@ -25,7 +25,7 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x01a50ae30e2935eeL;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0xf3749dd16a848cbdL;
  
         static joystick_update_t()
         {
@@ -108,9 +108,9 @@ namespace semisorted_arnerve
  
             this.numButtons = ins.ReadByte();
  
-            this.buttons = new bool[(int) numButtons];
+            this.buttons = new byte[(int) numButtons];
             for (int a = 0; a < this.numButtons; a++) {
-                this.buttons[a] = ins.ReadBoolean();
+                this.buttons[a] = ins.ReadByte();
             }
  
             this.numHats = ins.ReadByte();
@@ -136,7 +136,7 @@ namespace semisorted_arnerve
  
             outobj.numButtons = this.numButtons;
  
-            outobj.buttons = new bool[(int) numButtons];
+            outobj.buttons = new byte[(int) numButtons];
             for (int a = 0; a < this.numButtons; a++) {
                 outobj.buttons[a] = this.buttons[a];
             }

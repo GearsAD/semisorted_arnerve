@@ -9,7 +9,7 @@ struct joystick_update_t
 	int8_t numAxes;
 	int32_t axes[numAxes];
 	int8_t numButtons;
-	boolean buttons[numButtons];
+	int8_t buttons[numButtons];
 	int8_t numHats;
 	int16_t hats[numHats];
 }

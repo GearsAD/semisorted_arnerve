@@ -11,8 +11,8 @@ struct kinect_rawdata_t
 {
 	// Depth and rgb images
 	int32_t NUMIMAGEBYTES;
-	byte imagejpg_rgb[NUMIMAGEBYTES];
-	byte imagejpg_depth[NUMIMAGEBYTES];
+	int8_t imagejpg_rgb[NUMIMAGEBYTES];
+	int8_t imagejpg_depth[NUMIMAGEBYTES];
 	// The raw joints	
 	int32_t NUMJOINTS;
 	kinect_joint_t bodyjoints[NUMJOINTS];	
@@ -30,8 +30,8 @@ struct kinect_update_t
 	double rightvec[3];
 
 	// Information about the hands
-	bool is_rhandclosed;
-	bool is_lhandclosed;
+	int8_t is_rhandclosed;
+	int8_t is_lhandclosed;
 	double rhandposition[3];
 	double lhandposition[3];
 
