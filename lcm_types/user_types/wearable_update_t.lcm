@@ -6,11 +6,11 @@ struct joystick_update_t
 	//The name of the joystick
 	string name;
 	//The joystick state
-	int8_t numAxes;
+	byte numAxes;
 	int32_t axes[numAxes];
-	int8_t numButtons;
+	byte numButtons;
 	int8_t buttons[numButtons];
-	int8_t numHats;
+	byte numHats;
 	int16_t hats[numHats];
 }
 
@@ -22,7 +22,7 @@ struct wearable_update_t
 	int8_t issourceupdating;
 
 	//The keys that are pressed (the Peregrine)
-	int8_t numKeysDown;
+	byte numKeysDown;
 	int16_t keysPressed[numKeysDown];	
 
 	//The joysticks that are sampled (the Xbox controller)
