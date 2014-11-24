@@ -13,15 +13,17 @@ namespace semisorted_arnerve
     public sealed class kinect_joint_t : LCM.LCM.LCMEncodable
     {
         public double[] position;
+        public double[] orientation;
         public byte istracking;
  
         public kinect_joint_t()
         {
             position = new double[3];
+            orientation = new double[4];
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x35b170c185c3f02bL;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x197734cf05d46d9eL;
  
         static kinect_joint_t()
         {
@@ -50,6 +52,10 @@ namespace semisorted_arnerve
         {
             for (int a = 0; a < 3; a++) {
                 outs.Write(this.position[a]); 
+            }
+ 
+            for (int a = 0; a < 4; a++) {
+                outs.Write(this.orientation[a]); 
             }
  
             outs.Write(this.istracking); 
@@ -82,6 +88,11 @@ namespace semisorted_arnerve
                 this.position[a] = ins.ReadDouble();
             }
  
+            this.orientation = new double[(int) 4];
+            for (int a = 0; a < 4; a++) {
+                this.orientation[a] = ins.ReadDouble();
+            }
+ 
             this.istracking = ins.ReadByte();
  
         }
@@ -92,6 +103,11 @@ namespace semisorted_arnerve
             outobj.position = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
                 outobj.position[a] = this.position[a];
+            }
+ 
+            outobj.orientation = new double[(int) 4];
+            for (int a = 0; a < 4; a++) {
+                outobj.orientation[a] = this.orientation[a];
             }
  
             outobj.istracking = this.istracking;

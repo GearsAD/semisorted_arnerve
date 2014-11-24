@@ -4,6 +4,7 @@ package semisorted_arnerve;
 struct kinect_joint_t
 {
 	double position[3];
+	double orientation[4];
 	byte istracking;
 }
 

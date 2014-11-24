@@ -7,10 +7,11 @@ import cStringIO as StringIO
 import struct
 
 class kinect_joint_t(object):
-    __slots__ = ["position", "istracking"]
+    __slots__ = ["position", "orientation", "istracking"]
 
     def __init__(self):
         self.position = [ 0.0 for dim0 in range(3) ]
+        self.orientation = [ 0.0 for dim0 in range(4) ]
         self.istracking = 0
 
     def encode(self):
@@ -21,6 +22,7 @@ class kinect_joint_t(object):
 
     def _encode_one(self, buf):
         buf.write(struct.pack('>3d', *self.position[:3]))
+        buf.write(struct.pack('>4d', *self.orientation[:4]))
         buf.write(struct.pack(">B", self.istracking))
 
     def decode(data):
@@ -36,6 +38,7 @@ class kinect_joint_t(object):
     def _decode_one(buf):
         self = kinect_joint_t()
         self.position = struct.unpack('>3d', buf.read(24))
+        self.orientation = struct.unpack('>4d', buf.read(32))
         self.istracking = struct.unpack(">B", buf.read(1))[0]
         return self
     _decode_one = staticmethod(_decode_one)
@@ -43,7 +46,7 @@ class kinect_joint_t(object):
     _hash = None
     def _get_hash_recursive(parents):
         if kinect_joint_t in parents: return 0
-        tmphash = (0x35b170c185c3f02b) & 0xffffffffffffffff
+        tmphash = (0x197734cf05d46d9e) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

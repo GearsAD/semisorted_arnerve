@@ -12,15 +12,17 @@ import lcm.lcm.*;
 public final class kinect_joint_t implements lcm.lcm.LCMEncodable
 {
     public double position[];
+    public double orientation[];
     public byte istracking;
  
     public kinect_joint_t()
     {
         position = new double[3];
+        orientation = new double[4];
     }
  
     public static final long LCM_FINGERPRINT;
-    public static final long LCM_FINGERPRINT_BASE = 0x35b170c185c3f02bL;
+    public static final long LCM_FINGERPRINT_BASE = 0x197734cf05d46d9eL;
  
     static {
         LCM_FINGERPRINT = _hashRecursive(new ArrayList<Class<?>>());
@@ -48,6 +50,10 @@ public final class kinect_joint_t implements lcm.lcm.LCMEncodable
     {
         for (int a = 0; a < 3; a++) {
             outs.writeDouble(this.position[a]); 
+        }
+ 
+        for (int a = 0; a < 4; a++) {
+            outs.writeDouble(this.orientation[a]); 
         }
  
         outs.writeByte(this.istracking); 
@@ -81,6 +87,11 @@ public final class kinect_joint_t implements lcm.lcm.LCMEncodable
             this.position[a] = ins.readDouble();
         }
  
+        this.orientation = new double[(int) 4];
+        for (int a = 0; a < 4; a++) {
+            this.orientation[a] = ins.readDouble();
+        }
+ 
         this.istracking = ins.readByte();
  
     }
@@ -90,6 +101,8 @@ public final class kinect_joint_t implements lcm.lcm.LCMEncodable
         semisorted_arnerve.kinect_joint_t outobj = new semisorted_arnerve.kinect_joint_t();
         outobj.position = new double[(int) 3];
         System.arraycopy(this.position, 0, outobj.position, 0, 3); 
+        outobj.orientation = new double[(int) 4];
+        System.arraycopy(this.orientation, 0, outobj.orientation, 0, 4); 
         outobj.istracking = this.istracking;
  
         return outobj;
