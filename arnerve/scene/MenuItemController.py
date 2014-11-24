@@ -87,10 +87,12 @@ class MenuItemController(SceneObject):
             for item in self.menuItemList:
                 if item.CheckActor(pickedActor) == True:
                     self.SetSelectedMenuItem(item)
-        if self.CheckChildren(pickedActor) == True:
-            return
-        if self.CheckParent(self.selectedNode.parent, pickedActor) == True:
-            return
+                    return
+        if self.selectedNode != None:
+            if self.CheckChildren(pickedActor) == True:
+                return
+            if self.CheckParent(self.selectedNode.parent, pickedActor) == True:
+                return
         
     def CheckParent(self, parent, actor):
         if parent is not None:
@@ -115,32 +117,39 @@ class MenuItemController(SceneObject):
                 totalHeight += item.GetHeight()
             totalHeight = totalHeight / 2
             for item in self.menuItemList:
-                #position = [0.0, 0.0, 0.0]
-                position = self.relativePosition
-                position[0] += 0.0
-                position[1] += totalHeight - (item.GetHeight() / 2)
-                position[2] += item.GetDepth()
+                position = [0.0, 0.0, 0.0]
+                position[0] = 0.0
+                position[1] = totalHeight - (item.GetHeight() / 2)
+                position[2] = 0.0
                 totalHeight -= item.GetHeight()
-                item.SetPosition(position)
+                item.SetPositionVec3(position)
+                #item.SetPosition(position)
             
     def SetSelectedMenuItem(self, selectedNode):
         self.selectedNode = selectedNode
         if self.selectedNode.parent is None:
-            for item in self.menuItemList:
+            for item in self.childrenObjects:
                 if item is not self.selectedNode:
                     item.SetVisible(False)
-        for item in self.selectedNode.childMenuItems:
+        for item in self.selectedNode.childrenObjects:
             item.CloseMenuItem()
         self.selectedNode.OpenMenuItem()
         self.selectedNode.CloseUnselectedMenuItems()
-        #self.selectedNode.SetParentMenuItemPositions([0.0, 0.0, 0.0])
-        self.selectedNode.SetParentMenuItemPositions(self.relativePosition)
-        self.selectedNode.SetChildMenuItemPositions()
-        #if len(self.selectedNode.GetChildCount) <= 0:
+        self.SetMenuItemPositions(self.selectedNode, [0.0, 0.0, 0.0])
         
     def SetSelectedMenuItemLocation(self, selctedNodeLocation):
         self.selectedNode.SetSelectedMenuItemLocation()
-            #self.CloseMenu()
+
+    def SetMenuItemPositions(self, selectedNode, newPosition):
+        if selectedNode.parent is not None:
+            position = [newPosition[0], newPosition[1], newPosition[2]]
+            position[0] -= selectedNode.GetWidth()
+            position[1] -= 0.0
+            position[2] -= 0.0
+            self.SetMenuItemPositions(selectedNode.parent, newPosition)
+        if selectedNode.parent is None:
+            selectedNode.SetPositionVec3(newPosition)
+    
     def BuildTestMenu(self):
         MenuOption01 = MenuItem.MenuItem(self.renderers, 0, 4, 3, None, "Option 01", "")
         MenuOption02 = MenuItem.MenuItem(self.renderers, 0, 4, 3, None, "Option 02", "")

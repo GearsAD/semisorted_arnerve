@@ -16,10 +16,6 @@ class Bot(SceneObject):
     '''
     A template for loading complex models.
     '''
-
-    # The sensors
-    camScreen = None
-    lidar = None
     
     def __init__(self, renderer):
         '''
@@ -59,10 +55,10 @@ class Bot(SceneObject):
         Configure the children for this bot - camera and other sensors.
         '''
         # Create a camera screen and set the child's offset.
-        self.camScreen = CameraScreen.CameraScreen(renderer, 3, 4, 3)
-        self.camScreen.relativePosition = [0, 2.5, 0]
+        #self.camScreen = CameraScreen.CameraScreen(renderer, 3, 4, 3)
+        #self.camScreen.relativePosition = [0, 2.5, 0]
         # Add it to the bot's children
-        self.childrenObjects.append(self.camScreen)
+        #self.childrenObjects.append(self.camScreen)
          
         # Create the LIDAR template and set it to the child's offset as well         
         self.lidar = LIDAR.LIDAR(renderer, -90, 90, 180, -22.5, 22.5, 45, 5, 15, 5)
@@ -71,6 +67,7 @@ class Bot(SceneObject):
         self.childrenObjects.append(self.lidar)
         
         self.Menu = MenuItemController.MenuItemController(renderer, renderer[0].GetRenderWindow().GetInteractor(), "UserMenu")
+        self.Menu.relativePosition = [0, 0, 2]
         self.Menu.BuildTestMenu()
         self.childrenObjects.append(self.Menu)
          

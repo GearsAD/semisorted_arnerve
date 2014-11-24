@@ -7,11 +7,11 @@ Created on Nov 20, 2014
 import sys
 
 import vtk
+from LCMUserHerderController import LCMUserHerderController
 
 class RenderManager(object):
 
-    def __init__(self, name, device, width, height, stereo):
-        self.name = name
+    def __init__(self, device, width, height, stereo):
         self.device = device
         self.width = width
         self.height = height
@@ -44,14 +44,9 @@ class RenderManager(object):
     def __InitializeRenderWindowInteractor(self):
         self.renderWindowInteractor.Initialize()
     
-    def __CreateRenderLoop(self, frequency):
-        self.renderObserverId = self.renderWindowInteractor.AddObserver('TimerEvent', self.__3DRenderingLoop)
-        self.__3DViewLoopTimerId = self.renderWindowInteractor.CreateRepeatingTimer(30)
-    
-    def __3DRenderingLoop(self, obj, event):
-        iren = obj
-        iren.GetRenderWindow().Render()
-        
+    def RenderUpdate(self):
+        self.renderWindow.Render()
+                
     def Initialize(self):
         try:
             self.__CreateRenderer()
@@ -81,16 +76,7 @@ class RenderManager(object):
             self.__InitializeRenderWindowInteractor()
         except:
             print "Unexpected error:", sys.exc_info()[0]
-            
-        try:
-            self.__CreateRenderLoop(10)
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
-        
-    def Shutdown(self):
-        # Once done, remove the timer to clean up just to be neat
-        self.interactor.DestroyTimer(self.__3DViewLoopTimerId)
-        self.interactor.RemoveObserver(self.renderObserverId)
+                   
         
     def __InitDisplay(self, width, height):
         self.renderWindow.SetSize(width, height)

@@ -63,6 +63,7 @@ class Terrain(SceneObject):
         
         surfaceF.SetExecuteMethod(bessel)
         
+        
         # We warp the plane based on the scalar values calculated above
         warp = vtk.vtkWarpScalar()
         warp.SetInputConnection(surfaceF.GetOutputPort())

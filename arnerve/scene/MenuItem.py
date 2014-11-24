@@ -22,7 +22,7 @@ class MenuItem(SceneObject):
         
         self.menuItemCenter = [0.0, 0.0, 0.0]
         self.menuItemPadding = [0.0, 0.0, 0.0, 0.0]
-        self.childMenuItems = []
+        #self.childMenuItems = []
         self.parent = parent
         self.name = name
             
@@ -86,9 +86,9 @@ class MenuItem(SceneObject):
         self.menuItemCenter[1] = self.menuItemHeight / 2
         self.menuItemCenter[2] = self.menuItemDepth / 2
         
-        position = self.vtkActor.GetPosition()
+        #position = self.vtkActor.GetPosition()
         
-        self.SetPosition(position)
+        #self.SetPosition(position)
         
     def __str__(self):
         s = "Name : " + self.GetName() + "\n"
@@ -138,7 +138,7 @@ class MenuItem(SceneObject):
         return self.menuItemTexture
     
     def GetChildCount(self):
-        return len(self.childMenuItems)
+        return len(self.childrenObjects)
     
     def GetName(self):
         return self.name
@@ -176,65 +176,70 @@ class MenuItem(SceneObject):
         self.name = name
     
     def AddMenuItem(self, menuItem):
-        self.childMenuItems.append(menuItem)
+        #self.childMenuItems.append(menuItem)
+        self.childrenObjects.append(menuItem)
     
     def OpenMenuItem(self):
         self.SetOpen(True)
         self.SetVisible(True)
-        if len(self.childMenuItems) > 0:
-            for item in self.childMenuItems:
+        if len(self.childrenObjects) > 0:
+            for item in self.childrenObjects:
                 item.SetVisible(True)
     
     def CloseMenuItem(self):
         self.SetOpen(False)
         self.SetVisible(False)
-        if len(self.childMenuItems) > 0:
-            for item in self.childMenuItems:
+        if len(self.childrenObjects) > 0:
+            for item in self.childrenObjects:
                 item.CloseMenuItem()
             
     def CheckActor(self, actor):
         if self.vtkActor is actor:
             # Click the button.
-            if(self.__calbackFunction):
-                self.__calbackFunction(self.__callbackObject)
+            #if(self.__calbackFunction):
+            #    self.__calbackFunction(self.__callbackObject)
             return True
         return False
             
     def CloseUnselectedMenuItems(self):
         if self.parent is not None:
-            for item in self.parent.childMenuItems:
+            for item in self.parent.childrenObjects:
                 if item is not self:
                     item.SetOpen(False)
                     item.SetVisible(False)
     
-    def SetParentMenuItemPositions(self, newPosition):
-        #self.SetPosition(newPosition)
-        self.parent.SetPositionVec3(newPosition)
-        if self.parent is not None:
-            position = [newPosition[0], newPosition[1], newPosition[2]]
-            position[0] += -(self.GetWidth() / 2) - (self.parent.GetWidth() / 2)
-            position[1] += 0.0
-            position[2] += self.GetDepth()
-            self.parent.SetParentMenuItemPositions(position)
+    #def SetParentMenuItemPositions(self, newPosition):
+         #self.SetPosition(newPosition)
+         #self.relativePosition = newPosition
+        #self.SetPositionVec3(newPosition)
+        #if self.parent is not None:
+             #position = [newPosition[0], newPosition[1], newPosition[2]]
+            #position = self.GetPositionVec3()
+            #position[0] += -(self.GetWidth() / 2) - (self.parent.GetWidth() / 2)
+            #position[1] += 0.0
+            #position[2] += self.GetDepth()
+            #self.parent.SetParentMenuItemPositions(position)
     
-    def SetChildMenuItemPositions(self):
-        if len(self.childMenuItems) > 0:
-            totalHeight = 0.0
-            for item in self.childMenuItems:
-                totalHeight += item.GetHeight()
-            totalHeight = totalHeight / 2
-            for item in self.childMenuItems:
-                #position = [0.0, 0.0, 0.0]
-                position = self.relativePosition
-                position[0] += (item.GetWidth() / 2) + (item.parent.GetWidth() / 2)
-                position[1] += totalHeight - (item.GetHeight() / 2)
-                position[2] += item.parent.GetDepth()
-                totalHeight -= item.GetHeight()
-                item.SetPositionVec3(position)
+    #def SetChildMenuItemPositions(self):
+        #if len(self.childMenuItems) > 0:
+            #totalHeight = 0.0
+            #for item in self.childMenuItems:
+                #totalHeight += item.GetHeight()
+            #totalHeight = totalHeight / 2
+            #for item in self.childMenuItems:
+                 #position = item.parent.relativePosition
+                #position = item.parent.GetPositionVec3()
+                 #position = self.GetPositionVec3()
+                #position[0] += (item.GetWidth() / 2) + (item.parent.GetWidth() / 2)
+                #position[1] += totalHeight - (item.GetHeight() / 2)
+                #position[2] += item.parent.GetDepth()
+                #totalHeight -= item.GetHeight()
+                #item.relativePosition = position
+                 #item.SetPositionVec3(position)
     
     def GlobalMenuClose(self):
         if self.GetChildCount() > 0:
-            for item in self.childMenuItems:
+            for item in self.childrenObjects:
                 item.GlobalMenuClose()
         self.SetOpen(False)
         self.SetVisible(False)
