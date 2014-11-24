@@ -10,113 +10,113 @@ struct kinect_joint_t
 struct kinect_rawdata_t
 {
 	// Depth and rgb images
-	const int32_t NUMIMAGEBYTES;
-	int8_t imagejpg_rgb[NUMIMAGEBYTES];
-	int8_t imagejpg_depth[NUMIMAGEBYTES];
+	int32_t NUMRGBBYTES;
+	int32_t NUMDEPTHBYTES;
+	int8_t imagejpg_rgb[NUMRGBBYTES];
+	int8_t imagejpg_depth[NUMDEPTHBYTES];
 	// The raw joints	
-	const byte NUMJOINTS = 24;
-	kinect_joint_t bodyjoints[NUMJOINTS];	
+	kinect_joint_t bodyjoints[25];	
 	
 	//Copied from the K4W enumeration so they match up.
 	// Summary:
 	//     Base of the spine.
-	const byte SpineBase = 0;
+	const int8_t SpineBase = 0;
 	//
 	// Summary:
 	//     Middle of the spine.
-	const byte SpineMid = 1;
+	const int8_t SpineMid = 1;
 	//
 	// Summary:
 	//     Neck.
-	const byte Neck = 2;
+	const int8_t Neck = 2;
 	//
 	// Summary:
 	//     Head.
-	const byte Head = 3;
+	const int8_t Head = 3;
 	//
 	// Summary:
 	//     Left shoulder.
-	const byte ShoulderLeft = 4;
+	const int8_t ShoulderLeft = 4;
 	//
 	// Summary:
 	//     Left elbow.
-	const byte ElbowLeft = 5;
+	const int8_t ElbowLeft = 5;
 	//
 	// Summary:
 	//     Left wrist.
-	const byte WristLeft = 6;
+	const int8_t WristLeft = 6;
 	//
 	// Summary:
 	//     Left hand.
-	const byte HandLeft = 7;
+	const int8_t HandLeft = 7;
 	//
 	// Summary:
 	//     Right shoulder.
-	const byte ShoulderRight = 8;
+	const int8_t ShoulderRight = 8;
 	//
 	// Summary:
 	//     Right elbow.
-	const byte ElbowRight = 9;
+	const int8_t ElbowRight = 9;
 	//
 	// Summary:
 	//     Right wrist.
-	const byte WristRight = 10;
+	const int8_t WristRight = 10;
 	//
 	// Summary:
 	//     Right hand.
-	const byte HandRight = 11;
+	const int8_t HandRight = 11;
 	//
 	// Summary:
 	//     Left hip.
-	const byte HipLeft = 12;
+	const int8_t HipLeft = 12;
 	//
 	// Summary:
 	//     Left knee.
-	const byte KneeLeft = 13;
+	const int8_t KneeLeft = 13;
 	//
 	// Summary:
 	//     Left ankle.
-	const byte AnkleLeft = 14;
+	const int8_t AnkleLeft = 14;
 	//
 	// Summary:
 	//     Left foot.
-	const byte FootLeft = 15;
+	const int8_t FootLeft = 15;
 	//
 	// Summary:
 	//     Right hip.
-	const byte HipRight = 16;
+	const int8_t HipRight = 16;
 	//
 	// Summary:
 	//     Right knee.
-	const byte KneeRight = 17;
+	const int8_t KneeRight = 17;
 	//
 	// Summary:
 	//     Right ankle.
-	const byte AnkleRight = 18;
+	const int8_t AnkleRight = 18;
 	//
 	// Summary:
 	//     Right foot.
-	const byte FootRight = 19;
+	const int8_t FootRight = 19;
 	//
 	// Summary:
 	//     Between the shoulders on the spine.
-	const byte SpineShoulder = 20;
+	const int8_t SpineShoulder = 20;
 	//
 	// Summary:
 	//     Tip of the left hand.
-	const byte HandTipLeft = 21;
+	const int8_t HandTipLeft = 21;
 	//
 	// Summary:
 	//     Left thumb.
-	const byte ThumbLeft = 22;
+	const int8_t ThumbLeft = 22;
 	//
 	// Summary:
 	//     Tip of the right hand.
-	const byte HandTipRight = 23;
+	const int8_t HandTipRight = 23;
 	//
 	// Summary:
 	//     Right thumb.
-	const byte ThumbRight = 24;
+	const int8_t ThumbRight = 24;
 }
 
 //A frame for the bot info which will be transferred to the vtkGUI.

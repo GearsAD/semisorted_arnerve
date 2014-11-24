@@ -9,14 +9,40 @@ import struct
 import kinect_joint_t
 
 class kinect_rawdata_t(object):
-    __slots__ = ["NUMIMAGEBYTES", "imagejpg_rgb", "imagejpg_depth", "NUMJOINTS", "bodyjoints"]
+    __slots__ = ["NUMRGBBYTES", "NUMDEPTHBYTES", "imagejpg_rgb", "imagejpg_depth", "bodyjoints"]
+
+    SpineBase = 0
+    SpineMid = 1
+    Neck = 2
+    Head = 3
+    ShoulderLeft = 4
+    ElbowLeft = 5
+    WristLeft = 6
+    HandLeft = 7
+    ShoulderRight = 8
+    ElbowRight = 9
+    WristRight = 10
+    HandRight = 11
+    HipLeft = 12
+    KneeLeft = 13
+    AnkleLeft = 14
+    FootLeft = 15
+    HipRight = 16
+    KneeRight = 17
+    AnkleRight = 18
+    FootRight = 19
+    SpineShoulder = 20
+    HandTipLeft = 21
+    ThumbLeft = 22
+    HandTipRight = 23
+    ThumbRight = 24
 
     def __init__(self):
-        self.NUMIMAGEBYTES = 0
+        self.NUMRGBBYTES = 0
+        self.NUMDEPTHBYTES = 0
         self.imagejpg_rgb = []
         self.imagejpg_depth = []
-        self.NUMJOINTS = 0
-        self.bodyjoints = []
+        self.bodyjoints = [ None for dim0 in range(25) ]
 
     def encode(self):
         buf = StringIO.StringIO()
@@ -25,11 +51,10 @@ class kinect_rawdata_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">i", self.NUMIMAGEBYTES))
-        buf.write(struct.pack('>%db' % self.NUMIMAGEBYTES, *self.imagejpg_rgb[:self.NUMIMAGEBYTES]))
-        buf.write(struct.pack('>%db' % self.NUMIMAGEBYTES, *self.imagejpg_depth[:self.NUMIMAGEBYTES]))
-        buf.write(struct.pack(">i", self.NUMJOINTS))
-        for i0 in range(self.NUMJOINTS):
+        buf.write(struct.pack(">ii", self.NUMRGBBYTES, self.NUMDEPTHBYTES))
+        buf.write(struct.pack('>%db' % self.NUMRGBBYTES, *self.imagejpg_rgb[:self.NUMRGBBYTES]))
+        buf.write(struct.pack('>%db' % self.NUMDEPTHBYTES, *self.imagejpg_depth[:self.NUMDEPTHBYTES]))
+        for i0 in range(25):
             assert self.bodyjoints[i0]._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
             self.bodyjoints[i0]._encode_one(buf)
 
@@ -45,12 +70,11 @@ class kinect_rawdata_t(object):
 
     def _decode_one(buf):
         self = kinect_rawdata_t()
-        self.NUMIMAGEBYTES = struct.unpack(">i", buf.read(4))[0]
-        self.imagejpg_rgb = struct.unpack('>%db' % self.NUMIMAGEBYTES, buf.read(self.NUMIMAGEBYTES))
-        self.imagejpg_depth = struct.unpack('>%db' % self.NUMIMAGEBYTES, buf.read(self.NUMIMAGEBYTES))
-        self.NUMJOINTS = struct.unpack(">i", buf.read(4))[0]
+        self.NUMRGBBYTES, self.NUMDEPTHBYTES = struct.unpack(">ii", buf.read(8))
+        self.imagejpg_rgb = struct.unpack('>%db' % self.NUMRGBBYTES, buf.read(self.NUMRGBBYTES))
+        self.imagejpg_depth = struct.unpack('>%db' % self.NUMDEPTHBYTES, buf.read(self.NUMDEPTHBYTES))
         self.bodyjoints = []
-        for i0 in range(self.NUMJOINTS):
+        for i0 in range(25):
             self.bodyjoints.append(kinect_joint_t.kinect_joint_t._decode_one(buf))
         return self
     _decode_one = staticmethod(_decode_one)
@@ -59,7 +83,7 @@ class kinect_rawdata_t(object):
     def _get_hash_recursive(parents):
         if kinect_rawdata_t in parents: return 0
         newparents = parents + [kinect_rawdata_t]
-        tmphash = (0x83f3c2f97d2f262d+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x8f7e696b264ff6e7+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

@@ -13,12 +13,19 @@ import oculus_update_t
 import wearable_update_t
 
 class user_update_t(object):
-    __slots__ = ["timestamp", "name", "role", "kinect", "oculus", "wearable"]
+    __slots__ = ["timestamp", "name", "role", "pilotcraft", "plannergroup", "kinect", "oculus", "wearable"]
+
+    Observer = 0
+    Pilot = 1
+    Planner = 2
+    Commander = 3
 
     def __init__(self):
         self.timestamp = 0
         self.name = ""
         self.role = 0
+        self.pilotcraft = ""
+        self.plannergroup = ""
         self.kinect = None
         self.oculus = None
         self.wearable = None
@@ -36,6 +43,14 @@ class user_update_t(object):
         buf.write(__name_encoded)
         buf.write("\0")
         buf.write(struct.pack(">b", self.role))
+        __pilotcraft_encoded = self.pilotcraft.encode('utf-8')
+        buf.write(struct.pack('>I', len(__pilotcraft_encoded)+1))
+        buf.write(__pilotcraft_encoded)
+        buf.write("\0")
+        __plannergroup_encoded = self.plannergroup.encode('utf-8')
+        buf.write(struct.pack('>I', len(__plannergroup_encoded)+1))
+        buf.write(__plannergroup_encoded)
+        buf.write("\0")
         assert self.kinect._get_packed_fingerprint() == kinect_update_t.kinect_update_t._get_packed_fingerprint()
         self.kinect._encode_one(buf)
         assert self.oculus._get_packed_fingerprint() == oculus_update_t.oculus_update_t._get_packed_fingerprint()
@@ -59,6 +74,10 @@ class user_update_t(object):
         __name_len = struct.unpack('>I', buf.read(4))[0]
         self.name = buf.read(__name_len)[:-1].decode('utf-8', 'replace')
         self.role = struct.unpack(">b", buf.read(1))[0]
+        __pilotcraft_len = struct.unpack('>I', buf.read(4))[0]
+        self.pilotcraft = buf.read(__pilotcraft_len)[:-1].decode('utf-8', 'replace')
+        __plannergroup_len = struct.unpack('>I', buf.read(4))[0]
+        self.plannergroup = buf.read(__plannergroup_len)[:-1].decode('utf-8', 'replace')
         self.kinect = kinect_update_t.kinect_update_t._decode_one(buf)
         self.oculus = oculus_update_t.oculus_update_t._decode_one(buf)
         self.wearable = wearable_update_t.wearable_update_t._decode_one(buf)
@@ -69,7 +88,7 @@ class user_update_t(object):
     def _get_hash_recursive(parents):
         if user_update_t in parents: return 0
         newparents = parents + [user_update_t]
-        tmphash = (0xc60e3279ed965582+ kinect_update_t.kinect_update_t._get_hash_recursive(newparents)+ oculus_update_t.oculus_update_t._get_hash_recursive(newparents)+ wearable_update_t.wearable_update_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0x7771dcc02708970e+ kinect_update_t.kinect_update_t._get_hash_recursive(newparents)+ oculus_update_t.oculus_update_t._get_hash_recursive(newparents)+ wearable_update_t.wearable_update_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

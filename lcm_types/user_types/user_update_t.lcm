@@ -7,11 +7,11 @@ struct user_update_t
 	int64_t timestamp; //The timestamp of the current frame in ms
 
 	string name;
-	const byte Observer = 0;
-	const byte Pilot = 1;
-	const byte Planner = 2;
-	const byte Commander = 3;
-	byte role;
+	const int8_t Observer = 0;
+	const int8_t Pilot = 1;
+	const int8_t Planner = 2;
+	const int8_t Commander = 3;
+	int8_t role;
 	
 	string pilotcraft;
 	string plannergroup;

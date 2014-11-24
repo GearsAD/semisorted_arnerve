@@ -14,6 +14,8 @@ public final class user_update_t implements lcm.lcm.LCMEncodable
     public long timestamp;
     public String name;
     public byte role;
+    public String pilotcraft;
+    public String plannergroup;
     public semisorted_arnerve.kinect_update_t kinect;
     public semisorted_arnerve.oculus_update_t oculus;
     public semisorted_arnerve.wearable_update_t wearable;
@@ -23,8 +25,13 @@ public final class user_update_t implements lcm.lcm.LCMEncodable
     }
  
     public static final long LCM_FINGERPRINT;
-    public static final long LCM_FINGERPRINT_BASE = 0xc60e3279ed965582L;
+    public static final long LCM_FINGERPRINT_BASE = 0x7771dcc02708970eL;
  
+    public static final byte Observer = (byte) 0;
+    public static final byte Pilot = (byte) 1;
+    public static final byte Planner = (byte) 2;
+    public static final byte Commander = (byte) 3;
+
     static {
         LCM_FINGERPRINT = _hashRecursive(new ArrayList<Class<?>>());
     }
@@ -58,6 +65,10 @@ public final class user_update_t implements lcm.lcm.LCMEncodable
         __strbuf = new char[this.name.length()]; this.name.getChars(0, this.name.length(), __strbuf, 0); outs.writeInt(__strbuf.length+1); for (int _i = 0; _i < __strbuf.length; _i++) outs.write(__strbuf[_i]); outs.writeByte(0); 
  
         outs.writeByte(this.role); 
+ 
+        __strbuf = new char[this.pilotcraft.length()]; this.pilotcraft.getChars(0, this.pilotcraft.length(), __strbuf, 0); outs.writeInt(__strbuf.length+1); for (int _i = 0; _i < __strbuf.length; _i++) outs.write(__strbuf[_i]); outs.writeByte(0); 
+ 
+        __strbuf = new char[this.plannergroup.length()]; this.plannergroup.getChars(0, this.plannergroup.length(), __strbuf, 0); outs.writeInt(__strbuf.length+1); for (int _i = 0; _i < __strbuf.length; _i++) outs.write(__strbuf[_i]); outs.writeByte(0); 
  
         this.kinect._encodeRecursive(outs); 
  
@@ -96,6 +107,10 @@ public final class user_update_t implements lcm.lcm.LCMEncodable
  
         this.role = ins.readByte();
  
+        __strbuf = new char[ins.readInt()-1]; for (int _i = 0; _i < __strbuf.length; _i++) __strbuf[_i] = (char) (ins.readByte()&0xff); ins.readByte(); this.pilotcraft = new String(__strbuf);
+ 
+        __strbuf = new char[ins.readInt()-1]; for (int _i = 0; _i < __strbuf.length; _i++) __strbuf[_i] = (char) (ins.readByte()&0xff); ins.readByte(); this.plannergroup = new String(__strbuf);
+ 
         this.kinect = semisorted_arnerve.kinect_update_t._decodeRecursiveFactory(ins);
  
         this.oculus = semisorted_arnerve.oculus_update_t._decodeRecursiveFactory(ins);
@@ -112,6 +127,10 @@ public final class user_update_t implements lcm.lcm.LCMEncodable
         outobj.name = this.name;
  
         outobj.role = this.role;
+ 
+        outobj.pilotcraft = this.pilotcraft;
+ 
+        outobj.plannergroup = this.plannergroup;
  
         outobj.kinect = this.kinect.copy();
  

@@ -23,7 +23,7 @@ public final class oculus_update_t implements lcm.lcm.LCMEncodable
     }
  
     public static final long LCM_FINGERPRINT;
-    public static final long LCM_FINGERPRINT_BASE = 0x0e0291c595b7d362L;
+    public static final long LCM_FINGERPRINT_BASE = 0x8e7c72b02ec1b040L;
  
     static {
         LCM_FINGERPRINT = _hashRecursive(new ArrayList<Class<?>>());

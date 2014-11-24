@@ -24,7 +24,7 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x0e0291c595b7d362L;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x8e7c72b02ec1b040L;
  
         static oculus_update_t()
         {

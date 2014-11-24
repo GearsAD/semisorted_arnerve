@@ -22,7 +22,7 @@ class oculus_update_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">qb", self.timestamp, self.issourceupdating))
+        buf.write(struct.pack(">qB", self.timestamp, self.issourceupdating))
         buf.write(struct.pack('>3d', *self.headorientation[:3]))
         buf.write(struct.pack('>3d', *self.headposition[:3]))
 
@@ -38,7 +38,7 @@ class oculus_update_t(object):
 
     def _decode_one(buf):
         self = oculus_update_t()
-        self.timestamp, self.issourceupdating = struct.unpack(">qb", buf.read(9))
+        self.timestamp, self.issourceupdating = struct.unpack(">qB", buf.read(9))
         self.headorientation = struct.unpack('>3d', buf.read(24))
         self.headposition = struct.unpack('>3d', buf.read(24))
         return self
@@ -47,7 +47,7 @@ class oculus_update_t(object):
     _hash = None
     def _get_hash_recursive(parents):
         if oculus_update_t in parents: return 0
-        tmphash = (0xe0291c595b7d362) & 0xffffffffffffffff
+        tmphash = (0x8e7c72b02ec1b040) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

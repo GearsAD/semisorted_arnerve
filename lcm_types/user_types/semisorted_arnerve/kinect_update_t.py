@@ -8,21 +8,25 @@ import struct
 
 import kinect_rawdata_t
 
+import kinect_joint_t
+
 class kinect_update_t(object):
-    __slots__ = ["timestamp", "issourceupdating", "torsoposition", "forwardvec", "rightvec", "is_rhandclosed", "is_lhandclosed", "rhandposition", "lhandposition", "headorientation", "headposition", "rawkinectdata"]
+    __slots__ = ["timestamp", "issourceupdating", "istrackingbody", "torsoposition", "forwardvec", "upvec", "rightvec", "is_rhandclosed", "is_lhandclosed", "rhandposition", "lhandposition", "headorientation", "headposition", "rawkinectdata"]
 
     def __init__(self):
         self.timestamp = 0
         self.issourceupdating = 0
-        self.torsoposition = [ 0.0 for dim0 in range(3) ]
+        self.istrackingbody = 0
+        self.torsoposition = None
         self.forwardvec = [ 0.0 for dim0 in range(3) ]
+        self.upvec = [ 0.0 for dim0 in range(3) ]
         self.rightvec = [ 0.0 for dim0 in range(3) ]
         self.is_rhandclosed = 0
         self.is_lhandclosed = 0
-        self.rhandposition = [ 0.0 for dim0 in range(3) ]
-        self.lhandposition = [ 0.0 for dim0 in range(3) ]
+        self.rhandposition = None
+        self.lhandposition = None
         self.headorientation = [ 0.0 for dim0 in range(3) ]
-        self.headposition = [ 0.0 for dim0 in range(3) ]
+        self.headposition = None
         self.rawkinectdata = None
 
     def encode(self):
@@ -32,15 +36,20 @@ class kinect_update_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">qb", self.timestamp, self.issourceupdating))
-        buf.write(struct.pack('>3d', *self.torsoposition[:3]))
+        buf.write(struct.pack(">qBB", self.timestamp, self.issourceupdating, self.istrackingbody))
+        assert self.torsoposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
+        self.torsoposition._encode_one(buf)
         buf.write(struct.pack('>3d', *self.forwardvec[:3]))
+        buf.write(struct.pack('>3d', *self.upvec[:3]))
         buf.write(struct.pack('>3d', *self.rightvec[:3]))
-        buf.write(struct.pack(">bb", self.is_rhandclosed, self.is_lhandclosed))
-        buf.write(struct.pack('>3d', *self.rhandposition[:3]))
-        buf.write(struct.pack('>3d', *self.lhandposition[:3]))
+        buf.write(struct.pack(">BB", self.is_rhandclosed, self.is_lhandclosed))
+        assert self.rhandposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
+        self.rhandposition._encode_one(buf)
+        assert self.lhandposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
+        self.lhandposition._encode_one(buf)
         buf.write(struct.pack('>3d', *self.headorientation[:3]))
-        buf.write(struct.pack('>3d', *self.headposition[:3]))
+        assert self.headposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
+        self.headposition._encode_one(buf)
         assert self.rawkinectdata._get_packed_fingerprint() == kinect_rawdata_t.kinect_rawdata_t._get_packed_fingerprint()
         self.rawkinectdata._encode_one(buf)
 
@@ -56,15 +65,16 @@ class kinect_update_t(object):
 
     def _decode_one(buf):
         self = kinect_update_t()
-        self.timestamp, self.issourceupdating = struct.unpack(">qb", buf.read(9))
-        self.torsoposition = struct.unpack('>3d', buf.read(24))
+        self.timestamp, self.issourceupdating, self.istrackingbody = struct.unpack(">qBB", buf.read(10))
+        self.torsoposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
         self.forwardvec = struct.unpack('>3d', buf.read(24))
+        self.upvec = struct.unpack('>3d', buf.read(24))
         self.rightvec = struct.unpack('>3d', buf.read(24))
-        self.is_rhandclosed, self.is_lhandclosed = struct.unpack(">bb", buf.read(2))
-        self.rhandposition = struct.unpack('>3d', buf.read(24))
-        self.lhandposition = struct.unpack('>3d', buf.read(24))
+        self.is_rhandclosed, self.is_lhandclosed = struct.unpack(">BB", buf.read(2))
+        self.rhandposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
+        self.lhandposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
         self.headorientation = struct.unpack('>3d', buf.read(24))
-        self.headposition = struct.unpack('>3d', buf.read(24))
+        self.headposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
         self.rawkinectdata = kinect_rawdata_t.kinect_rawdata_t._decode_one(buf)
         return self
     _decode_one = staticmethod(_decode_one)
@@ -73,7 +83,7 @@ class kinect_update_t(object):
     def _get_hash_recursive(parents):
         if kinect_update_t in parents: return 0
         newparents = parents + [kinect_update_t]
-        tmphash = (0x86bc047dbcd6d578+ kinect_rawdata_t.kinect_rawdata_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xfd475b70f54a5e35+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_rawdata_t.kinect_rawdata_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)

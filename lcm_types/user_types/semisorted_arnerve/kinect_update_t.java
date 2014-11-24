@@ -13,30 +13,29 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
 {
     public long timestamp;
     public byte issourceupdating;
-    public double torsoposition[];
+    public byte istrackingbody;
+    public semisorted_arnerve.kinect_joint_t torsoposition;
     public double forwardvec[];
+    public double upvec[];
     public double rightvec[];
     public byte is_rhandclosed;
     public byte is_lhandclosed;
-    public double rhandposition[];
-    public double lhandposition[];
+    public semisorted_arnerve.kinect_joint_t rhandposition;
+    public semisorted_arnerve.kinect_joint_t lhandposition;
     public double headorientation[];
-    public double headposition[];
+    public semisorted_arnerve.kinect_joint_t headposition;
     public semisorted_arnerve.kinect_rawdata_t rawkinectdata;
  
     public kinect_update_t()
     {
-        torsoposition = new double[3];
         forwardvec = new double[3];
+        upvec = new double[3];
         rightvec = new double[3];
-        rhandposition = new double[3];
-        lhandposition = new double[3];
         headorientation = new double[3];
-        headposition = new double[3];
     }
  
     public static final long LCM_FINGERPRINT;
-    public static final long LCM_FINGERPRINT_BASE = 0x86bc047dbcd6d578L;
+    public static final long LCM_FINGERPRINT_BASE = 0xfd475b70f54a5e35L;
  
     static {
         LCM_FINGERPRINT = _hashRecursive(new ArrayList<Class<?>>());
@@ -49,6 +48,10 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
  
         classes.add(semisorted_arnerve.kinect_update_t.class);
         long hash = LCM_FINGERPRINT_BASE
+             + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
+             + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
+             + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
+             + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
              + semisorted_arnerve.kinect_rawdata_t._hashRecursive(classes)
             ;
         classes.remove(classes.size() - 1);
@@ -67,12 +70,16 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
  
         outs.writeByte(this.issourceupdating); 
  
-        for (int a = 0; a < 3; a++) {
-            outs.writeDouble(this.torsoposition[a]); 
-        }
+        outs.writeByte(this.istrackingbody); 
+ 
+        this.torsoposition._encodeRecursive(outs); 
  
         for (int a = 0; a < 3; a++) {
             outs.writeDouble(this.forwardvec[a]); 
+        }
+ 
+        for (int a = 0; a < 3; a++) {
+            outs.writeDouble(this.upvec[a]); 
         }
  
         for (int a = 0; a < 3; a++) {
@@ -83,21 +90,15 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
  
         outs.writeByte(this.is_lhandclosed); 
  
-        for (int a = 0; a < 3; a++) {
-            outs.writeDouble(this.rhandposition[a]); 
-        }
+        this.rhandposition._encodeRecursive(outs); 
  
-        for (int a = 0; a < 3; a++) {
-            outs.writeDouble(this.lhandposition[a]); 
-        }
+        this.lhandposition._encodeRecursive(outs); 
  
         for (int a = 0; a < 3; a++) {
             outs.writeDouble(this.headorientation[a]); 
         }
  
-        for (int a = 0; a < 3; a++) {
-            outs.writeDouble(this.headposition[a]); 
-        }
+        this.headposition._encodeRecursive(outs); 
  
         this.rawkinectdata._encodeRecursive(outs); 
  
@@ -129,14 +130,18 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
  
         this.issourceupdating = ins.readByte();
  
-        this.torsoposition = new double[(int) 3];
-        for (int a = 0; a < 3; a++) {
-            this.torsoposition[a] = ins.readDouble();
-        }
+        this.istrackingbody = ins.readByte();
+ 
+        this.torsoposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
         this.forwardvec = new double[(int) 3];
         for (int a = 0; a < 3; a++) {
             this.forwardvec[a] = ins.readDouble();
+        }
+ 
+        this.upvec = new double[(int) 3];
+        for (int a = 0; a < 3; a++) {
+            this.upvec[a] = ins.readDouble();
         }
  
         this.rightvec = new double[(int) 3];
@@ -148,25 +153,16 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
  
         this.is_lhandclosed = ins.readByte();
  
-        this.rhandposition = new double[(int) 3];
-        for (int a = 0; a < 3; a++) {
-            this.rhandposition[a] = ins.readDouble();
-        }
+        this.rhandposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
-        this.lhandposition = new double[(int) 3];
-        for (int a = 0; a < 3; a++) {
-            this.lhandposition[a] = ins.readDouble();
-        }
+        this.lhandposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
         this.headorientation = new double[(int) 3];
         for (int a = 0; a < 3; a++) {
             this.headorientation[a] = ins.readDouble();
         }
  
-        this.headposition = new double[(int) 3];
-        for (int a = 0; a < 3; a++) {
-            this.headposition[a] = ins.readDouble();
-        }
+        this.headposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
         this.rawkinectdata = semisorted_arnerve.kinect_rawdata_t._decodeRecursiveFactory(ins);
  
@@ -179,24 +175,28 @@ public final class kinect_update_t implements lcm.lcm.LCMEncodable
  
         outobj.issourceupdating = this.issourceupdating;
  
-        outobj.torsoposition = new double[(int) 3];
-        System.arraycopy(this.torsoposition, 0, outobj.torsoposition, 0, 3); 
+        outobj.istrackingbody = this.istrackingbody;
+ 
+        outobj.torsoposition = this.torsoposition.copy();
+ 
         outobj.forwardvec = new double[(int) 3];
         System.arraycopy(this.forwardvec, 0, outobj.forwardvec, 0, 3); 
+        outobj.upvec = new double[(int) 3];
+        System.arraycopy(this.upvec, 0, outobj.upvec, 0, 3); 
         outobj.rightvec = new double[(int) 3];
         System.arraycopy(this.rightvec, 0, outobj.rightvec, 0, 3); 
         outobj.is_rhandclosed = this.is_rhandclosed;
  
         outobj.is_lhandclosed = this.is_lhandclosed;
  
-        outobj.rhandposition = new double[(int) 3];
-        System.arraycopy(this.rhandposition, 0, outobj.rhandposition, 0, 3); 
-        outobj.lhandposition = new double[(int) 3];
-        System.arraycopy(this.lhandposition, 0, outobj.lhandposition, 0, 3); 
+        outobj.rhandposition = this.rhandposition.copy();
+ 
+        outobj.lhandposition = this.lhandposition.copy();
+ 
         outobj.headorientation = new double[(int) 3];
         System.arraycopy(this.headorientation, 0, outobj.headorientation, 0, 3); 
-        outobj.headposition = new double[(int) 3];
-        System.arraycopy(this.headposition, 0, outobj.headposition, 0, 3); 
+        outobj.headposition = this.headposition.copy();
+ 
         outobj.rawkinectdata = this.rawkinectdata.copy();
  
         return outobj;

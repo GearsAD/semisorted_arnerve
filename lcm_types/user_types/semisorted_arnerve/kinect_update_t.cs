@@ -14,30 +14,29 @@ namespace semisorted_arnerve
     {
         public long timestamp;
         public byte issourceupdating;
-        public double[] torsoposition;
+        public byte istrackingbody;
+        public semisorted_arnerve.kinect_joint_t torsoposition;
         public double[] forwardvec;
+        public double[] upvec;
         public double[] rightvec;
         public byte is_rhandclosed;
         public byte is_lhandclosed;
-        public double[] rhandposition;
-        public double[] lhandposition;
+        public semisorted_arnerve.kinect_joint_t rhandposition;
+        public semisorted_arnerve.kinect_joint_t lhandposition;
         public double[] headorientation;
-        public double[] headposition;
+        public semisorted_arnerve.kinect_joint_t headposition;
         public semisorted_arnerve.kinect_rawdata_t rawkinectdata;
  
         public kinect_update_t()
         {
-            torsoposition = new double[3];
             forwardvec = new double[3];
+            upvec = new double[3];
             rightvec = new double[3];
-            rhandposition = new double[3];
-            lhandposition = new double[3];
             headorientation = new double[3];
-            headposition = new double[3];
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x86bc047dbcd6d578L;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0xfd475b70f54a5e35L;
  
         static kinect_update_t()
         {
@@ -51,6 +50,10 @@ namespace semisorted_arnerve
  
             classes.Add("semisorted_arnerve.kinect_update_t");
             ulong hash = LCM_FINGERPRINT_BASE
+                 + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
+                 + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
+                 + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
+                 + semisorted_arnerve.kinect_joint_t._hashRecursive(classes)
                  + semisorted_arnerve.kinect_rawdata_t._hashRecursive(classes)
                 ;
             classes.RemoveAt(classes.Count - 1);
@@ -69,12 +72,16 @@ namespace semisorted_arnerve
  
             outs.Write(this.issourceupdating); 
  
-            for (int a = 0; a < 3; a++) {
-                outs.Write(this.torsoposition[a]); 
-            }
+            outs.Write(this.istrackingbody); 
+ 
+            this.torsoposition._encodeRecursive(outs); 
  
             for (int a = 0; a < 3; a++) {
                 outs.Write(this.forwardvec[a]); 
+            }
+ 
+            for (int a = 0; a < 3; a++) {
+                outs.Write(this.upvec[a]); 
             }
  
             for (int a = 0; a < 3; a++) {
@@ -85,21 +92,15 @@ namespace semisorted_arnerve
  
             outs.Write(this.is_lhandclosed); 
  
-            for (int a = 0; a < 3; a++) {
-                outs.Write(this.rhandposition[a]); 
-            }
+            this.rhandposition._encodeRecursive(outs); 
  
-            for (int a = 0; a < 3; a++) {
-                outs.Write(this.lhandposition[a]); 
-            }
+            this.lhandposition._encodeRecursive(outs); 
  
             for (int a = 0; a < 3; a++) {
                 outs.Write(this.headorientation[a]); 
             }
  
-            for (int a = 0; a < 3; a++) {
-                outs.Write(this.headposition[a]); 
-            }
+            this.headposition._encodeRecursive(outs); 
  
             this.rawkinectdata._encodeRecursive(outs); 
  
@@ -130,14 +131,18 @@ namespace semisorted_arnerve
  
             this.issourceupdating = ins.ReadByte();
  
-            this.torsoposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                this.torsoposition[a] = ins.ReadDouble();
-            }
+            this.istrackingbody = ins.ReadByte();
+ 
+            this.torsoposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
             this.forwardvec = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
                 this.forwardvec[a] = ins.ReadDouble();
+            }
+ 
+            this.upvec = new double[(int) 3];
+            for (int a = 0; a < 3; a++) {
+                this.upvec[a] = ins.ReadDouble();
             }
  
             this.rightvec = new double[(int) 3];
@@ -149,25 +154,16 @@ namespace semisorted_arnerve
  
             this.is_lhandclosed = ins.ReadByte();
  
-            this.rhandposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                this.rhandposition[a] = ins.ReadDouble();
-            }
+            this.rhandposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
-            this.lhandposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                this.lhandposition[a] = ins.ReadDouble();
-            }
+            this.lhandposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
             this.headorientation = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
                 this.headorientation[a] = ins.ReadDouble();
             }
  
-            this.headposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                this.headposition[a] = ins.ReadDouble();
-            }
+            this.headposition = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
  
             this.rawkinectdata = semisorted_arnerve.kinect_rawdata_t._decodeRecursiveFactory(ins);
  
@@ -180,14 +176,18 @@ namespace semisorted_arnerve
  
             outobj.issourceupdating = this.issourceupdating;
  
-            outobj.torsoposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                outobj.torsoposition[a] = this.torsoposition[a];
-            }
+            outobj.istrackingbody = this.istrackingbody;
+ 
+            outobj.torsoposition = this.torsoposition.Copy();
  
             outobj.forwardvec = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
                 outobj.forwardvec[a] = this.forwardvec[a];
+            }
+ 
+            outobj.upvec = new double[(int) 3];
+            for (int a = 0; a < 3; a++) {
+                outobj.upvec[a] = this.upvec[a];
             }
  
             outobj.rightvec = new double[(int) 3];
@@ -199,25 +199,16 @@ namespace semisorted_arnerve
  
             outobj.is_lhandclosed = this.is_lhandclosed;
  
-            outobj.rhandposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                outobj.rhandposition[a] = this.rhandposition[a];
-            }
+            outobj.rhandposition = this.rhandposition.Copy();
  
-            outobj.lhandposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                outobj.lhandposition[a] = this.lhandposition[a];
-            }
+            outobj.lhandposition = this.lhandposition.Copy();
  
             outobj.headorientation = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
                 outobj.headorientation[a] = this.headorientation[a];
             }
  
-            outobj.headposition = new double[(int) 3];
-            for (int a = 0; a < 3; a++) {
-                outobj.headposition[a] = this.headposition[a];
-            }
+            outobj.headposition = this.headposition.Copy();
  
             outobj.rawkinectdata = this.rawkinectdata.Copy();
  

@@ -15,6 +15,8 @@ namespace semisorted_arnerve
         public long timestamp;
         public String name;
         public byte role;
+        public String pilotcraft;
+        public String plannergroup;
         public semisorted_arnerve.kinect_update_t kinect;
         public semisorted_arnerve.oculus_update_t oculus;
         public semisorted_arnerve.wearable_update_t wearable;
@@ -24,8 +26,13 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0xc60e3279ed965582L;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x7771dcc02708970eL;
  
+        public const int Observer = 0;
+        public const int Pilot = 1;
+        public const int Planner = 2;
+        public const int Commander = 3;
+
         static user_update_t()
         {
             LCM_FINGERPRINT = _hashRecursive(new List<String>());
@@ -60,6 +67,10 @@ namespace semisorted_arnerve
             __strbuf = System.Text.Encoding.GetEncoding("US-ASCII").GetBytes(this.name); outs.Write(__strbuf.Length+1); outs.Write(__strbuf, 0, __strbuf.Length); outs.Write((byte) 0); 
  
             outs.Write(this.role); 
+ 
+            __strbuf = System.Text.Encoding.GetEncoding("US-ASCII").GetBytes(this.pilotcraft); outs.Write(__strbuf.Length+1); outs.Write(__strbuf, 0, __strbuf.Length); outs.Write((byte) 0); 
+ 
+            __strbuf = System.Text.Encoding.GetEncoding("US-ASCII").GetBytes(this.plannergroup); outs.Write(__strbuf.Length+1); outs.Write(__strbuf, 0, __strbuf.Length); outs.Write((byte) 0); 
  
             this.kinect._encodeRecursive(outs); 
  
@@ -97,6 +108,10 @@ namespace semisorted_arnerve
  
             this.role = ins.ReadByte();
  
+            __strbuf = new byte[ins.ReadInt32()-1]; ins.ReadFully(__strbuf); ins.ReadByte(); this.pilotcraft = System.Text.Encoding.GetEncoding("US-ASCII").GetString(__strbuf);
+ 
+            __strbuf = new byte[ins.ReadInt32()-1]; ins.ReadFully(__strbuf); ins.ReadByte(); this.plannergroup = System.Text.Encoding.GetEncoding("US-ASCII").GetString(__strbuf);
+ 
             this.kinect = semisorted_arnerve.kinect_update_t._decodeRecursiveFactory(ins);
  
             this.oculus = semisorted_arnerve.oculus_update_t._decodeRecursiveFactory(ins);
@@ -113,6 +128,10 @@ namespace semisorted_arnerve
             outobj.name = this.name;
  
             outobj.role = this.role;
+ 
+            outobj.pilotcraft = this.pilotcraft;
+ 
+            outobj.plannergroup = this.plannergroup;
  
             outobj.kinect = this.kinect.Copy();
  

@@ -12,19 +12,46 @@ namespace semisorted_arnerve
 {
     public sealed class kinect_rawdata_t : LCM.LCM.LCMEncodable
     {
-        public int NUMIMAGEBYTES;
+        public int NUMRGBBYTES;
+        public int NUMDEPTHBYTES;
         public byte[] imagejpg_rgb;
         public byte[] imagejpg_depth;
-        public int NUMJOINTS;
         public semisorted_arnerve.kinect_joint_t[] bodyjoints;
  
         public kinect_rawdata_t()
         {
+            bodyjoints = new semisorted_arnerve.kinect_joint_t[25];
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x83f3c2f97d2f262dL;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x8f7e696b264ff6e7L;
  
+        public const int SpineBase = 0;
+        public const int SpineMid = 1;
+        public const int Neck = 2;
+        public const int Head = 3;
+        public const int ShoulderLeft = 4;
+        public const int ElbowLeft = 5;
+        public const int WristLeft = 6;
+        public const int HandLeft = 7;
+        public const int ShoulderRight = 8;
+        public const int ElbowRight = 9;
+        public const int WristRight = 10;
+        public const int HandRight = 11;
+        public const int HipLeft = 12;
+        public const int KneeLeft = 13;
+        public const int AnkleLeft = 14;
+        public const int FootLeft = 15;
+        public const int HipRight = 16;
+        public const int KneeRight = 17;
+        public const int AnkleRight = 18;
+        public const int FootRight = 19;
+        public const int SpineShoulder = 20;
+        public const int HandTipLeft = 21;
+        public const int ThumbLeft = 22;
+        public const int HandTipRight = 23;
+        public const int ThumbRight = 24;
+
         static kinect_rawdata_t()
         {
             LCM_FINGERPRINT = _hashRecursive(new List<String>());
@@ -51,19 +78,19 @@ namespace semisorted_arnerve
  
         public void _encodeRecursive(LCMDataOutputStream outs)
         {
-            outs.Write(this.NUMIMAGEBYTES); 
+            outs.Write(this.NUMRGBBYTES); 
  
-            for (int a = 0; a < this.NUMIMAGEBYTES; a++) {
+            outs.Write(this.NUMDEPTHBYTES); 
+ 
+            for (int a = 0; a < this.NUMRGBBYTES; a++) {
                 outs.Write(this.imagejpg_rgb[a]); 
             }
  
-            for (int a = 0; a < this.NUMIMAGEBYTES; a++) {
+            for (int a = 0; a < this.NUMDEPTHBYTES; a++) {
                 outs.Write(this.imagejpg_depth[a]); 
             }
  
-            outs.Write(this.NUMJOINTS); 
- 
-            for (int a = 0; a < this.NUMJOINTS; a++) {
+            for (int a = 0; a < 25; a++) {
                 this.bodyjoints[a]._encodeRecursive(outs); 
             }
  
@@ -90,22 +117,22 @@ namespace semisorted_arnerve
  
         public void _decodeRecursive(LCMDataInputStream ins)
         {
-            this.NUMIMAGEBYTES = ins.ReadInt32();
+            this.NUMRGBBYTES = ins.ReadInt32();
  
-            this.imagejpg_rgb = new byte[(int) NUMIMAGEBYTES];
-            for (int a = 0; a < this.NUMIMAGEBYTES; a++) {
+            this.NUMDEPTHBYTES = ins.ReadInt32();
+ 
+            this.imagejpg_rgb = new byte[(int) NUMRGBBYTES];
+            for (int a = 0; a < this.NUMRGBBYTES; a++) {
                 this.imagejpg_rgb[a] = ins.ReadByte();
             }
  
-            this.imagejpg_depth = new byte[(int) NUMIMAGEBYTES];
-            for (int a = 0; a < this.NUMIMAGEBYTES; a++) {
+            this.imagejpg_depth = new byte[(int) NUMDEPTHBYTES];
+            for (int a = 0; a < this.NUMDEPTHBYTES; a++) {
                 this.imagejpg_depth[a] = ins.ReadByte();
             }
  
-            this.NUMJOINTS = ins.ReadInt32();
- 
-            this.bodyjoints = new semisorted_arnerve.kinect_joint_t[(int) NUMJOINTS];
-            for (int a = 0; a < this.NUMJOINTS; a++) {
+            this.bodyjoints = new semisorted_arnerve.kinect_joint_t[(int) 25];
+            for (int a = 0; a < 25; a++) {
                 this.bodyjoints[a] = semisorted_arnerve.kinect_joint_t._decodeRecursiveFactory(ins);
             }
  
@@ -114,22 +141,22 @@ namespace semisorted_arnerve
         public semisorted_arnerve.kinect_rawdata_t Copy()
         {
             semisorted_arnerve.kinect_rawdata_t outobj = new semisorted_arnerve.kinect_rawdata_t();
-            outobj.NUMIMAGEBYTES = this.NUMIMAGEBYTES;
+            outobj.NUMRGBBYTES = this.NUMRGBBYTES;
  
-            outobj.imagejpg_rgb = new byte[(int) NUMIMAGEBYTES];
-            for (int a = 0; a < this.NUMIMAGEBYTES; a++) {
+            outobj.NUMDEPTHBYTES = this.NUMDEPTHBYTES;
+ 
+            outobj.imagejpg_rgb = new byte[(int) NUMRGBBYTES];
+            for (int a = 0; a < this.NUMRGBBYTES; a++) {
                 outobj.imagejpg_rgb[a] = this.imagejpg_rgb[a];
             }
  
-            outobj.imagejpg_depth = new byte[(int) NUMIMAGEBYTES];
-            for (int a = 0; a < this.NUMIMAGEBYTES; a++) {
+            outobj.imagejpg_depth = new byte[(int) NUMDEPTHBYTES];
+            for (int a = 0; a < this.NUMDEPTHBYTES; a++) {
                 outobj.imagejpg_depth[a] = this.imagejpg_depth[a];
             }
  
-            outobj.NUMJOINTS = this.NUMJOINTS;
- 
-            outobj.bodyjoints = new semisorted_arnerve.kinect_joint_t[(int) NUMJOINTS];
-            for (int a = 0; a < this.NUMJOINTS; a++) {
+            outobj.bodyjoints = new semisorted_arnerve.kinect_joint_t[(int) 25];
+            for (int a = 0; a < 25; a++) {
                 outobj.bodyjoints[a] = this.bodyjoints[a].Copy();
             }
  
