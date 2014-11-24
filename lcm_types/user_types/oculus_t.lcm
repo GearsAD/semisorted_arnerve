@@ -5,6 +5,7 @@ package semisorted_arnerve;
 struct oculus_update_t
 {
 	int64_t timestamp; //The timestamp of the current frame in ms
+	int8_t issourceupdating;
 
 	// The head orientation
 	double headorientation[3];

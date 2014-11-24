@@ -13,6 +13,7 @@ namespace semisorted_arnerve
     public sealed class oculus_update_t : LCM.LCM.LCMEncodable
     {
         public long timestamp;
+        public byte issourceupdating;
         public double[] headorientation;
         public double[] headposition;
  
@@ -23,7 +24,7 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x2168a8d99c85d900L;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x0e0291c595b7d362L;
  
         static oculus_update_t()
         {
@@ -51,6 +52,8 @@ namespace semisorted_arnerve
         public void _encodeRecursive(LCMDataOutputStream outs)
         {
             outs.Write(this.timestamp); 
+ 
+            outs.Write(this.issourceupdating); 
  
             for (int a = 0; a < 3; a++) {
                 outs.Write(this.headorientation[a]); 
@@ -85,6 +88,8 @@ namespace semisorted_arnerve
         {
             this.timestamp = ins.ReadInt64();
  
+            this.issourceupdating = ins.ReadByte();
+ 
             this.headorientation = new double[(int) 3];
             for (int a = 0; a < 3; a++) {
                 this.headorientation[a] = ins.ReadDouble();
@@ -101,6 +106,8 @@ namespace semisorted_arnerve
         {
             semisorted_arnerve.oculus_update_t outobj = new semisorted_arnerve.oculus_update_t();
             outobj.timestamp = this.timestamp;
+ 
+            outobj.issourceupdating = this.issourceupdating;
  
             outobj.headorientation = new double[(int) 3];
             for (int a = 0; a < 3; a++) {

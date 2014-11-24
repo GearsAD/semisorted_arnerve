@@ -19,6 +19,7 @@ struct joystick_update_t
 struct wearable_update_t
 {
 	int64_t timestamp; //The timestamp of the current frame in ms
+	int8_t issourceupdating;
 
 	//The keys that are pressed (the Peregrine)
 	int8_t numKeysDown;

@@ -23,6 +23,7 @@ struct kinect_rawdata_t
 struct kinect_update_t
 {
 	int64_t timestamp; //The timestamp of the current frame in ms
+	int8_t issourceupdating;
 
 	// The torso information (root node)
 	double torsoposition[3];

@@ -13,6 +13,7 @@ namespace semisorted_arnerve
     public sealed class wearable_update_t : LCM.LCM.LCMEncodable
     {
         public long timestamp;
+        public byte issourceupdating;
         public byte numKeysDown;
         public short[] keysPressed;
         public semisorted_arnerve.joystick_update_t joystick;
@@ -22,7 +23,7 @@ namespace semisorted_arnerve
         }
  
         public static readonly ulong LCM_FINGERPRINT;
-        public static readonly ulong LCM_FINGERPRINT_BASE = 0x1b8d2e7c5a7f0fb3L;
+        public static readonly ulong LCM_FINGERPRINT_BASE = 0x27622aafeb64febfL;
  
         static wearable_update_t()
         {
@@ -51,6 +52,8 @@ namespace semisorted_arnerve
         public void _encodeRecursive(LCMDataOutputStream outs)
         {
             outs.Write(this.timestamp); 
+ 
+            outs.Write(this.issourceupdating); 
  
             outs.Write(this.numKeysDown); 
  
@@ -85,6 +88,8 @@ namespace semisorted_arnerve
         {
             this.timestamp = ins.ReadInt64();
  
+            this.issourceupdating = ins.ReadByte();
+ 
             this.numKeysDown = ins.ReadByte();
  
             this.keysPressed = new short[(int) numKeysDown];
@@ -100,6 +105,8 @@ namespace semisorted_arnerve
         {
             semisorted_arnerve.wearable_update_t outobj = new semisorted_arnerve.wearable_update_t();
             outobj.timestamp = this.timestamp;
+ 
+            outobj.issourceupdating = this.issourceupdating;
  
             outobj.numKeysDown = this.numKeysDown;
  

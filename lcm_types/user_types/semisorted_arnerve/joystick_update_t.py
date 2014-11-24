@@ -62,7 +62,7 @@ class joystick_update_t(object):
     _hash = None
     def _get_hash_recursive(parents):
         if joystick_update_t in parents: return 0
-        tmphash = (0x1a50ae30e2935ee) & 0xffffffffffffffff
+        tmphash = (0xf3749dd16a848cbd) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)
