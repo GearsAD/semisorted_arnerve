@@ -16,50 +16,54 @@ class Interactor1stPersonUser(InteractorSuperclass):
     Interactors: http://www.atamai.com/cgi-bin/viewvc.cgi/atamai/classes/PaneFrame.py?diff_format=u&pathrev=OCCIviewer-1-0-99&logsort=cvs&sortby=rev&view=diff&r1=1.25&r2=1.26
     '''
     
-    def __init__(self, renderer, iren):
+    def __init__(self, renderer, iren, userManager, cameraController):
         # Call the parent constructor
         InteractorSuperclass.__init__(self, renderer, iren)
-                
+        
+        # Keep track of the managers
+        self.__userManager = userManager
+        self.__cameraController = cameraController
+        
         # Finally call the event handler to do a first-call update in case the model doesn't move
         self.MouseMoveCallback(None, None)
         
-    def SetCameraPosition(self, posVec3):
-        camera = self.GetCurrentRenderer().GetActiveCamera()
-        #Calculate the difference between the focal point and the camera
-        focal = camera.GetFocalPoint()
-        camPos = camera.GetPosition()
-        focal = (focal[0] + posVec3[0] - camPos[0], focal[1] + posVec3[1] - camPos[1], focal[2] + posVec3[2] - camPos[2])
-        camera.SetPosition(posVec3)
-        camera.SetFocalPoint(focal) 
+    def Update(self):
+        # Get the current user.
+        user = self.__userManager.currentUser
+        userCenter = self.__userManager.currentUserModel.vtkActor.GetPosition()
+        headRelativePos = [
+                           user.kinect.headposition.position[0],
+                           user.kinect.headposition.position[1],
+                           user.kinect.headposition.position[2]-0.5,
+                           ]
+        headRelativeTarget = [
+                           user.kinect.headposition.position[0],
+                           user.kinect.headposition.position[1],
+                           user.kinect.headposition.position[2],
+                           ]
+#         headRelativeTarget = [headRelativePos[0], headRelativePos[1], headRelativePos[2]+1] #Along unit-z
+        #headRelativeTarget = [headRelativePos[0], headRelativePos[1], headRelativePos[2]+1] #Along unit-z
+        # Add in the  user's position to get the absolute head position
+        for i in range(0,3):
+            headRelativePos[i] += userCenter[i]
+            headRelativeTarget[i] += userCenter[i]
+        self.__cameraController.SetPosition(headRelativePos)
+        self.__cameraController.SetTargetPosition(headRelativeTarget)
+        headOrient = [
+                      user.oculus.headorientation[0] * 180.0 / 3.141,
+                      user.oculus.headorientation[1] * 180.0 / 3.141,
+                      user.oculus.headorientation[2] * 180.0 / 3.141]
+        self.__cameraController.SetTargetOrientation(headOrient)
+        return
     
     def MouseMoveCallback(self, obj, event):
-        # Get the interactor
-        iren = self.GetInteractor()
-        if iren is None: return
+        '''
+        Do nothing with the mouse here for the moment.
+        '''
         
-        # Ref: http://portal.nersc.gov/svn/visit/trunk/vendor_branches/vtk/src/Rendering/vtkInteractorStyleTrackballCamera.cxx
-        dx = iren.GetEventPosition()[0] - iren.GetLastEventPosition()[0];
-        dy = iren.GetEventPosition()[1] - iren.GetLastEventPosition()[1];
-        
-        # Rotate the focal point around (yaw = x) and (pitch =y) by a factor of the mouse differentials dx and dy
-        camera = self.GetCurrentRenderer().GetActiveCamera()
-        camera.SetRoll(0)
-        
-        screenSize = iren.GetRenderWindow().GetSize()
-        
-        # Yaw changes in a negative direction but the pitch is correct
-        camera.Yaw(-float(dx) / float(screenSize[0]) * 360 * 2.0);
-        camera.Pitch(float(dy) / float(screenSize[1]) * 180 / 2.0);
-                
-        # Update the clipping range of the camera
-        self.GetCurrentRenderer().ResetCameraClippingRange()
-
-        # Move it to the center of the screen again so we stay away from the bounds.
-        #iren.GetRenderWindow().SetCursorPosition(512, 384)
-
     def KeydownCallback(self, obj, event):
         '''
-        Responding to keyboard events for now, want something more interactive later.
+        Move the user around with the keyboard.
         Ref: http://portal.nersc.gov/svn/visit/tags/2.6.0/vendor_branches/vtk/src/Examples/GUI/Python/CustomInteraction.py
         '''
         # Get the interactor
@@ -75,9 +79,17 @@ class Interactor1stPersonUser(InteractorSuperclass):
             self.__MoveRight()
         if key == "4":
             self.__MoveLeft()
+        if key == "m":
+            self.__OpenMenu()
 
     def KeyupCallback(self, obj, event):
         return
+
+    def __OpenMenu(self):
+        '''
+        Tell the user to open the menu.
+        '''
+        self.__userManager.currentUserModel.OpenMenu()
     
     def __MoveForward(self):
         camera = self.GetCurrentRenderer().GetActiveCamera()

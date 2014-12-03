@@ -7,239 +7,206 @@ Created on Nov 11, 2014
 import vtk
 
 from SceneObject import SceneObject
+from Text import Text
 
 class MenuItem(SceneObject):
     
-    def __init__(self, renderers, screenDistance, width, height, parent, name, image, callbackObject = None, callbackFunction = None):
+    def __init__(self, renderManager, width, height, parent, name, vtkTextureSelected, vtkTextureUnselected, callbackFunction = None, callbackObject = None):
+        '''
+        Initialize the MenuItem.
+        '''
+        # Initialize all the variables so that they're unique
         
-        super(MenuItem, self).__init__(renderers)
+        self.__renderManager = renderManager
         
-        self.isOpen = False
-        self.isVisible = False
+        # Call the parent constructor
+        super(MenuItem, self).__init__(self.__renderManager.renderers)
         
-        self.menuItemTexture = "../scene/media/semisortedcameralogo.png"
-        #self.menuItemTexture = image
+        # Set selected and unselected textures
+        self.__selectedTexture = vtkTextureSelected
+        self.__unselectedTexture = vtkTextureUnselected
         
-        self.menuItemCenter = [0.0, 0.0, 0.0]
         self.menuItemPadding = [0.0, 0.0, 0.0, 0.0]
-        #self.childMenuItems = []
         self.parent = parent
         self.name = name
+        
+        # Default a menu item to be hidden and collapsed.
+        self.__isOpen = False
+        self.__isVisible = False
             
-        self.planeSource = vtk.vtkPlaneSource()
+        self.__planeSource = vtk.vtkPlaneSource()
+        self.__transform = vtk.vtkTransform()
+        self.__transform.Scale(width, height, 1)
+        self.__transformFilter = vtk.vtkTransformPolyDataFilter()
+        self.__transformFilter.SetInputConnection(self.__planeSource.GetOutputPort())
+        self.__transformFilter.SetTransform(self.__transform)
         
-        self.transform = vtk.vtkTransform()
-        
-        self.transform.Scale(width, height, 1)
-        
-        self.transformFilter = vtk.vtkTransformPolyDataFilter()
-        
-        self.transformFilter.SetInputConnection(self.planeSource.GetOutputPort())
-        self.transformFilter.SetTransform(self.transform)
-  
-        self.PNGReader = vtk.vtkPNGReader()
-        
-        self.PNGReader.SetFileName(self.menuItemTexture)
-        
-        self.VTKTexture = vtk.vtkTexture()
-        
-        self.VTKTexture.SetInputConnection(self.PNGReader.GetOutputPort())
-        self.VTKTexture.InterpolateOn()
-        
-        self.planeMapper = vtk.vtkPolyDataMapper()
-        self.planeMapper.SetInputConnection(self.transformFilter.GetOutputPort())
+        self.__planeMapper = vtk.vtkPolyDataMapper()
+        self.__planeMapper.SetInputConnection(self.__transformFilter.GetOutputPort())
          
-        self.vtkActor.SetMapper(self.planeMapper)
-        self.vtkActor.SetTexture(self.VTKTexture)
+        self.vtkActor.SetMapper(self.__planeMapper)
+        self.vtkActor.SetTexture(self.__unselectedTexture)
         self.vtkActor.VisibilityOff()
         self.vtkActor.DragableOff()
-        
-        # Create the 3D text and the associated mapper and follower (a type of
-        # actor).  Position the text so it is displayed over the origin of the
-        # axes.
-        #atext = vtk.vtkVectorText()
-        #atext.SetText(name)
-        #textMapper = vtk.vtkPolyDataMapper()
-        #textMapper.SetInputConnection(atext.GetOutputPort())
-        #self.textActor = vtk.vtkFollower()
-        #self.textActor.SetMapper(textMapper)
-        #self.textActor.SetScale(0.2, 0.2, 0.2)
-        #self.textActor.AddPosition(0, -0.1, 0)
-        #for item in renderers:
-        #    item.AddActor(self.textActor)
-        
-        if parent is not None:
-            parent.AddMenuItem(self)
+                
+        self.parent.AddMenuItem(self)
             
-        self.__callbackObject = callbackObject
-        self.__calbackFunction = callbackFunction
-        
+        self.SetCallback(callbackFunction, callbackObject)
+                
         bounds = self.vtkActor.GetBounds()
 
-        self.menuItemWidth = bounds[1] - bounds[0]
-        self.menuItemHeight = bounds[3] - bounds[2]
-        self.menuItemDepth = bounds[5] - bounds[4]
+        self.__menuItemWidth = bounds[1] - bounds[0]
+        self.__menuItemHeight = bounds[3] - bounds[2]
         
-        #center = self.vtkActor.GetCenter()
+        # Add the text such that it is centred and at the right x position for the icon on the right of the SAOish texture 
+        # (root nodes do not have text, so this is a special case for leaf nodes with a known texture)
+        # Below is a HACK
+        planeWidth = self.GetWidth()
+        textureWidth = 258.0
+        textPos = 83.0 
+        textOffset = -planeWidth / 2.0 + textPos / textureWidth * planeWidth #Special calc = left edge [which is -width / 2] + pixel position of text [83] / (total pixel width of texture [258]) * total surface width [width]
         
-        self.menuItemCenter[0] = self.menuItemWidth / 2
-        self.menuItemCenter[1] = self.menuItemHeight / 2
-        self.menuItemCenter[2] = self.menuItemDepth / 2
-        
-        #position = self.vtkActor.GetPosition()
-        
-        #self.SetPosition(position)
+        self.__textItem = Text(self.__renderManager.renderers, self, name, height/4.0, [textOffset, -height * 1.0 / 8.0, 0.01])
+        # Turn off picking for the text.
+        self.__textItem.vtkActor.PickableOff()
+        # Add it to the children
+        self.childrenObjects.append(self.__textItem)
         
     def __str__(self):
+        '''
+        Print the MenuItem
+        '''
         s = "Name : " + self.GetName() + "\n"
         s += "Open : " + str(self.GetOpen()) + "\n"
         s += "Visible : " + str(self.GetVisible()) + "\n"
         s += "Width : " + str(self.GetWidth()) + "\n"
         s += "Height : " + str(self.GetHeight()) + "\n"
-        s += "Depth : " + str(self.GetDepth()) + "\n"
-        s += "Center : " + str(self.GetCenter()) + "\n"
-        s += "Position : " + str(self.GetPosition()) + "\n"
         s += "Padding : " + str(self.GetPadding()) + "\n"
-        s += "Texture : " + self.GetTexture() + "\n"
         s += "Child Menu Item Count : " + str(self.GetChildCount()) + "\n"
+        s += "Call Back Function : " + str(self.__calbackFunction) + "\n"
+        s += "Call Back Object : " + str(self.__callbackObject) + "\n"
         return s
         
     def GetOpen(self):
-        return self.isOpen
+        return self.__isOpen
     
     def GetVisible(self):
-        return self.isVisible
+        return self.__isVisible
     
-    # Width is returned after adding MenuItem Padding (left and right)
     def GetWidth(self):
-        width = self.menuItemPadding[0] + self.menuItemWidth + self.menuItemPadding[2]
+        # Width is returned after adding MenuItem Padding (left and right)
+        width = self.menuItemPadding[0] + self.__menuItemWidth + self.menuItemPadding[2]
         return width
     
-    # Height is returned after adding MenuItem Padding (top and bottom)
     def GetHeight(self):
-        height = self.menuItemPadding[1] + self.menuItemHeight + self.menuItemPadding[3]
+        # Height is returned after adding MenuItem Padding (top and bottom)
+        height = self.menuItemPadding[1] + self.__menuItemHeight + self.menuItemPadding[3]
         return height
-        
-    # Depth is returned without MenuItem Padding
-    def GetDepth(self):
-        return self.menuItemDepth
-    
-    def GetCenter(self):
-        return self.menuItemCenter
     
     def GetPadding(self):
         return self.menuItemPadding
-        
-    # Returns position of MenuItem
-    def GetPosition(self):
-        return self.menuItemPosition
-
-    def GetTexture(self):
-        return self.menuItemTexture
+    
+    def GetParent(self):
+        return self.parent
     
     def GetChildCount(self):
         return len(self.childrenObjects)
+    
+    def GetChildren(self):
+        '''
+        Create a list of all MenuItem Children
+        '''
+        children = []
+        
+        # Get all MenuItem children
+        for child in self.childrenObjects:
+            if type(child) is MenuItem:
+                children.append(child)
+        
+        return children
     
     def GetName(self):
         return self.name
     
     def SetOpen(self, status):
-        self.isOpen = status
+        self.__isOpen = status
         
     def SetVisible(self, status):
-        self.isVisible = status
-        if self.isVisible == True:
+        '''
+        Set the MenuItem visibility, set textItem visibility
+        '''
+        self.__isVisible = status
+        
+        # Set the MenuItems Visibility and the accompanying text visibility
+        if self.__isVisible == True:
             self.vtkActor.VisibilityOn()
-        if self.isVisible == False:
+            self.__textItem.vtkActor.VisibilityOn()
+        if self.__isVisible == False:
             self.vtkActor.VisibilityOff()
-        
-    def SetWidth(self, width):
-        self.menuItemWidth = width
-    
-    def SetHeight(self, height):
-        self.menuItemHeight = height
-        
-    def SetDepth(self, depth):
-        self.menuItemDepth = depth
+            self.__textItem.vtkActor.VisibilityOff()
         
     def SetPadding(self, padding):
-        self.menuItemPadding = padding
+        self.__menuItemPadding = padding
     
     def SetPosition(self, position):
-        self.relativePosition = position
-#         self.menuItemPosition = position
-#         self.vtkActor.SetPosition(self.menuItemPosition)
-        #Move the text
-        #self.textActor.SetPosition(self.menuItemPosition)
+        self.SetSceneObjectPosition(position)
         
     def SetName(self, name):
-        self.name = name
+        self.__name = name
     
-    def AddMenuItem(self, menuItem):
-        #self.childMenuItems.append(menuItem)
+    def SetCallback(self, callbackFunction, callbackObject):
+        '''
+        Set the callback for this MenuItem
+        '''
+        self.__callbackObject = callbackObject
+        self.__calbackFunction = callbackFunction
+    
+    def AddMenuItem(self, menuItem):     
         self.childrenObjects.append(menuItem)
     
     def OpenMenuItem(self):
+        '''
+        Open the MenuItem, set the visibility and set the texture, set visibility for each child MenuItem
+        '''
         self.SetOpen(True)
         self.SetVisible(True)
-        if len(self.childrenObjects) > 0:
-            for item in self.childrenObjects:
-                item.SetVisible(True)
-    
-    def CloseMenuItem(self):
-        self.SetOpen(False)
-        self.SetVisible(False)
-        if len(self.childrenObjects) > 0:
-            for item in self.childrenObjects:
-                item.CloseMenuItem()
-            
-    def CheckActor(self, actor):
-        if self.vtkActor is actor:
-            # Click the button.
-            #if(self.__calbackFunction):
-            #    self.__calbackFunction(self.__callbackObject)
-            return True
-        return False
-            
-    def CloseUnselectedMenuItems(self):
-        if self.parent is not None:
-            for item in self.parent.childrenObjects:
-                if item is not self:
-                    item.SetOpen(False)
-                    item.SetVisible(False)
-    
-    #def SetParentMenuItemPositions(self, newPosition):
-         #self.SetPosition(newPosition)
-         #self.relativePosition = newPosition
-        #self.SetPositionVec3(newPosition)
-        #if self.parent is not None:
-             #position = [newPosition[0], newPosition[1], newPosition[2]]
-            #position = self.GetPositionVec3()
-            #position[0] += -(self.GetWidth() / 2) - (self.parent.GetWidth() / 2)
-            #position[1] += 0.0
-            #position[2] += self.GetDepth()
-            #self.parent.SetParentMenuItemPositions(position)
-    
-    #def SetChildMenuItemPositions(self):
-        #if len(self.childMenuItems) > 0:
-            #totalHeight = 0.0
-            #for item in self.childMenuItems:
-                #totalHeight += item.GetHeight()
-            #totalHeight = totalHeight / 2
-            #for item in self.childMenuItems:
-                 #position = item.parent.relativePosition
-                #position = item.parent.GetPositionVec3()
-                 #position = self.GetPositionVec3()
-                #position[0] += (item.GetWidth() / 2) + (item.parent.GetWidth() / 2)
-                #position[1] += totalHeight - (item.GetHeight() / 2)
-                #position[2] += item.parent.GetDepth()
-                #totalHeight -= item.GetHeight()
-                #item.relativePosition = position
-                 #item.SetPositionVec3(position)
-    
-    def GlobalMenuClose(self):
+        self.vtkActor.SetTexture(self.__selectedTexture)
         if self.GetChildCount() > 0:
             for item in self.childrenObjects:
-                item.GlobalMenuClose()
+                # Make sure we are only setting MenuItem
+                if type(item) is MenuItem:
+                    item.SetVisible(True)
+    
+    def CloseMenuItem(self):
+        '''
+        Close the MenuItem, set the visibility and set the texture, recursive function
+        '''
         self.SetOpen(False)
         self.SetVisible(False)
+        self.vtkActor.SetTexture(self.__unselectedTexture)
+        if self.GetChildCount() > 0:
+            for item in self.childrenObjects:
+                # Make sure we are only setting MenuItem
+                if type(item) is MenuItem:
+                    item.CloseMenuItem()
+            
+    def CheckActor(self, actor):
+        '''
+        Check if this MenuItem is picked, return true if it is picked, also fire the MenuItem's callback if it exists.
+        '''
+        if self.vtkActor is actor: #If the actor is the picked one
+            # Click the button.
+            if self.__calbackFunction is not None:
+                self.__calbackFunction(self.__callbackObject)
+            return True
+        return False
+    
+    def GlobalMenuClose(self):
+        '''
+        Close and remove all references to the menu items.
+        '''
+        if self.GetChildCount() > 0:
+            for item in self.childrenObjects:
+                if type(item) is MenuItem:
+                    item.GlobalMenuClose()
+        self.RemoveSceneObject()

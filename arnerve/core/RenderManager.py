@@ -16,7 +16,8 @@ class RenderManager(object):
         self.width = width
         self.height = height
         self.stereo = stereo
-        self.renderers = [] 
+        self.renderers = []
+        self.currentInteractorStyle = None
         
     def __CreateRenderer(self):        
         if self.stereo == True:
@@ -45,6 +46,12 @@ class RenderManager(object):
         self.renderWindowInteractor.Initialize()
     
     def RenderUpdate(self):
+        '''
+        Perform interactor update and render the scene.
+        '''
+        # Update the interactor style
+        self.__UpdateCurrentInteractorStyle()
+        # Render the scene
         self.renderWindow.Render()
                 
     def Initialize(self):
@@ -87,3 +94,15 @@ class RenderManager(object):
     def __InitWrap920(self, width, height):
         self.renderWindow.SetSize(width, height)
     
+    def SetCurrentInteractorStyle(self, newInteractorStyle):
+        '''
+        Attach a created interactor style and track it.
+        '''
+        if self.currentInteractorStyle is not None:
+            self.currentInteractorStyle.Disconnect()
+        self.renderWindowInteractor.SetInteractorStyle(newInteractorStyle)
+        self.currentInteractorStyle = newInteractorStyle
+        
+    def __UpdateCurrentInteractorStyle(self):
+        if self.currentInteractorStyle is not None:
+            self.currentInteractorStyle.Update()

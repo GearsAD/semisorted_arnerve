@@ -14,12 +14,12 @@ class CameraScreen(SceneObject):
     # The camera texture
     cameraVtkTexture = None
     
-    def __init__(self, renderer, screenDistance, width, height):
+    def __init__(self, renderer, parent, screenDistance, width, height):
         '''
         Initialize the CameraScreen model.
         '''
         # Call the parent constructor
-        super(CameraScreen,self).__init__(renderer)
+        super(CameraScreen,self).__init__(renderer, parent)
         
         # Create a plane for the camera 
         # Ref: http://www.vtk.org/doc/nightly/html/classvtkPlaneSource.html

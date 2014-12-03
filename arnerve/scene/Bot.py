@@ -35,7 +35,6 @@ class Bot(SceneObject):
         transF = vtk.vtkTransformPolyDataFilter()
         transF.SetInputConnection(reader.GetOutputPort())
         transF.SetTransform(trans)
-        
          
         self.__mapper = vtk.vtkPolyDataMapper()
         #if vtk.VTK_MAJOR_VERSION <= 5:
@@ -48,26 +47,21 @@ class Bot(SceneObject):
         # Set up all the children for this model
         self.__setupChildren(renderer)
         # Set it to [0,0,0] so that it updates all the children
-        self.SetPositionVec3([0, 0, 0])
+        self.SetSceneObjectPosition([0, 0, 0])
         
     def __setupChildren(self, renderer):
         '''
         Configure the children for this bot - camera and other sensors.
         '''
         # Create a camera screen and set the child's offset.
-        #self.camScreen = CameraScreen.CameraScreen(renderer, 3, 4, 3)
-        #self.camScreen.relativePosition = [0, 2.5, 0]
+        self.camScreen = CameraScreen.CameraScreen(renderer, self, 3, 4, 3)
+        self.camScreen.SetSceneObjectPosition([0, 2.5, 0])
         # Add it to the bot's children
-        #self.childrenObjects.append(self.camScreen)
+        self.childrenObjects.append(self.camScreen)
          
         # Create the LIDAR template and set it to the child's offset as well         
-        self.lidar = LIDAR.LIDAR(renderer, -90, 90, 180, -22.5, 22.5, 45, 5, 15, 5)
-        self.lidar.relativePosition = [0, 2.5, 0]
+        self.lidar = LIDAR.LIDAR(renderer, self, -90, 90, 180, -22.5, 22.5, 45, 5, 15, 5)
+        self.lidar.SetSceneObjectPosition([0, 2.5, 0])
         # Add it to the bot's children
         self.childrenObjects.append(self.lidar)
-        
-        self.Menu = MenuItemController.MenuItemController(renderer, renderer[0].GetRenderWindow().GetInteractor(), "UserMenu")
-        self.Menu.relativePosition = [0, 0, 2]
-        self.Menu.BuildTestMenu()
-        self.childrenObjects.append(self.Menu)
-         
+                 

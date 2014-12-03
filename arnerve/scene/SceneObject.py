@@ -2,7 +2,7 @@
 Created on Aug 5, 2014
 
 @author: gearsad, alucard
-@change: Fixed GetOrientation(), Re-factored Code
+@change: Fixed GetOrientation(), Re-factored Code, added FK [Gears]
 @version: v0.5
 '''
 import vtk
@@ -11,47 +11,69 @@ class SceneObject(object):
     '''
     This is a basic superclass for any object that will be included in the 3D scene.
     '''
-    def __init__(self, renderers):
+    def __init__(self, renderers, parent = None):
         '''
         Constructor with the renderer passed in
         '''
         # Initialize all the variables so that they're unique to self
         # The children SceneObjects for this SceneObject - both rotationally and positionally bound to the parent 
         self.childrenObjects = []
-        # The positional offset of this object if it is a child 
-        self.relativePosition = [0, 0, 0]
-        # The rotational offset of this object if it is a child
-        self.relativeRotation = [0, 0, 0]
+       
+        # Set the parent for this SceneObject - makes it positionally and rotationally bound
+        self.parent = parent
+
         # The actor
         # Ref - http://www.vtk.org/doc/nightly/html/classvtkActor.html
         self.vtkActor = vtk.vtkActor()
         
-        for item in renderers:
-            item.AddActor(self.vtkActor)
-        #renderer.AddActor(self.vtkActor)
+        self.__renderers = renderers
         
-    def SetPositionVec3(self, positionVec3):
-        self.vtkActor.SetPosition(positionVec3[0], positionVec3[1], positionVec3[2])
-        # Update all the children
+        # Add the actor to all the renderers
+        for renderer in renderers:
+            renderer.AddActor(self.vtkActor)
+            
+    def RemoveSceneObject(self):
+        '''
+        Remove the actor and the children from the scene.
+        '''
+        for child in self.childrenObjects:
+            child.RemoveSceneObject()
+        self.childrenObjects = []
+        # Now clear the parent.
+        for renderer in self.__renderers:
+            renderer.RemoveActor(self.vtkActor)
+        self.parent = None
+    
+    def UpdateFromParent(self):
+        '''
+        Update the transform matrices from the parent if it exists - part of the forward kinematics of SceneObject.
+        '''
+        if self.parent is not None:
+            self.parent.vtkActor.ComputeMatrix()
+            parentMatrix = self.parent.vtkActor.GetMatrix()
+            self.vtkActor.SetUserMatrix(parentMatrix)
         for sceneObject in self.childrenObjects:
-            newLoc = [0, 0, 0]
-            newLoc[0] = positionVec3[0] + sceneObject.relativePosition[0]
-            newLoc[1] = positionVec3[1] + sceneObject.relativePosition[1]
-            newLoc[2] = positionVec3[2] + sceneObject.relativePosition[2]
-            sceneObject.SetPositionVec3(newLoc)
-    
-    def GetPositionVec3(self):
+            sceneObject.UpdateFromParent()            
+            
+    def SetSceneObjectPosition(self, positionVec3):
+        '''
+        Set the position of this SceneObject and update the children if they exist - part of the forward kinematics of SceneObject.
+        '''
+        self.vtkActor.SetPosition(positionVec3[0], positionVec3[1], positionVec3[2])
+        # Update all the children)
+        self.UpdateFromParent()
+
+    def GetSceneObjectPosition(self):
+        '''
+        You got it, get the current relative position from the vtkActor. Will be a tuple because VTK likes it like that (rowr!).
+        '''
         return self.vtkActor.GetPosition()
-    
-    def SetOrientationVec3(self, orientationVec3):
+            
+    def SetSceneObjectOrientation(self, orientationVec3):
+        '''
+        Set the orientation of this SceneObject and update the children if they exist - part of the forward kinematics of SceneObject.
+        '''
         self.vtkActor.SetOrientation(orientationVec3[0], orientationVec3[1], orientationVec3[2])
         # Update all the children
-        for sceneObject in self.childrenObjects:
-            newOr = [0, 0, 0]
-            newOr[0] = orientationVec3[0] + sceneObject.relativeRotation[0]
-            newOr[1] = orientationVec3[1] + sceneObject.relativeRotation[1]
-            newOr[2] = orientationVec3[2] + sceneObject.relativeRotation[2]
-            sceneObject.SetOrientationVec3(newOr)
-    
-    def GetOrientationVec3(self):
-        return self.vtkActor.GetOrientation()
+        self.UpdateFromParent()
+        

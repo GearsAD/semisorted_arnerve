@@ -79,4 +79,7 @@ class Terrain(SceneObject):
         
         # Finally assign this to the parent class actor so that it draws.
         self.vtkActor.SetMapper(mapper)
+        
+        # [HACK] Got tired of picking terrain [Alucard]
+        self.vtkActor.PickableOff()
             

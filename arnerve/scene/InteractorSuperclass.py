@@ -46,3 +46,9 @@ class InteractorSuperclass(vtk.vtkInteractorStyle):
  
     def KeyupCallback(self, obj, event):
         raise NotImplementedError("KeyupCallback hasn't been overwritten in " + self.__name__ + ". This is an abstract method, don't call the base.")
+
+    def Update(self):
+        '''
+        Perform general updates here, which will be sync'ed to the render loop
+        '''
+        raise NotImplementedError("Update hasn't been overwritten in " + self.__name__ + ". This is an abstract method, don't call the base.")

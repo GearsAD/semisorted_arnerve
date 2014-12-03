@@ -27,12 +27,12 @@ class LIDAR(SceneObject):
     thetaRange = [0, 0]
     phiRange = [0, 0]
     
-    def __init__(self, renderer, minTheta, maxTheta, numThetaReadings, minPhi, maxPhi, numPhiReadings, minDepth, maxDepth, initialValue):
+    def __init__(self, renderer, parent, minTheta, maxTheta, numThetaReadings, minPhi, maxPhi, numPhiReadings, minDepth, maxDepth, initialValue):
         '''
         Initialize the LIDAR point cloud.
         '''
         # Call the parent constructor
-        super(LIDAR,self).__init__(renderer)
+        super(LIDAR,self).__init__(renderer, parent)
         # Cache these
         self.numPhiReadings = numPhiReadings
         self.numThetaReadings = numThetaReadings
