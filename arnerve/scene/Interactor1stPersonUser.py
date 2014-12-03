@@ -34,14 +34,14 @@ class Interactor1stPersonUser(InteractorSuperclass):
         headRelativePos = [
                            user.kinect.headposition.position[0],
                            user.kinect.headposition.position[1],
-                           user.kinect.headposition.position[2]-0.5,
-                           ]
-        headRelativeTarget = [
-                           user.kinect.headposition.position[0],
-                           user.kinect.headposition.position[1],
                            user.kinect.headposition.position[2],
                            ]
-#         headRelativeTarget = [headRelativePos[0], headRelativePos[1], headRelativePos[2]+1] #Along unit-z
+#         headRelativeTarget = [
+#                            user.kinect.headposition.position[0],
+#                            user.kinect.headposition.position[1],
+#                            user.kinect.headposition.position[2],
+#                            ]
+        headRelativeTarget = [headRelativePos[0], headRelativePos[1], headRelativePos[2]+1] #Along unit-z
         #headRelativeTarget = [headRelativePos[0], headRelativePos[1], headRelativePos[2]+1] #Along unit-z
         # Add in the  user's position to get the absolute head position
         for i in range(0,3):

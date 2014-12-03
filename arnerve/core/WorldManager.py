@@ -47,7 +47,7 @@ class WorldManager(object):
         
     def Start(self):
         self.CreateUpdateLoop(30)
-        #self.CreateCommsLoop(10)
+        self.CreateCommsLoop(10)
         self.renderManager.renderWindowInteractor.Start()
 
     def CreateUpdateLoop(self, frequency):

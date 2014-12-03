@@ -110,13 +110,12 @@ class User(SceneObject):
 #         self.headPointerCylinder.SetSceneObjectPosition(update_user.kinect.headposition.position)
         
         #Set the hands.
-        self.lHand.SetSceneObjectPosition(update_user.kinect.rhandposition.position)
-        self.rHand.SetSceneObjectPosition(update_user.kinect.lhandposition.position)
-        print "[User.py] - It seems that left and right hand data is swapped, please fix and repair here"
+        self.lHand.SetSceneObjectPosition(update_user.kinect.lhandposition.position)
+        self.rHand.SetSceneObjectPosition(update_user.kinect.rhandposition.position)
 
-        # Update the menu position 1 meter in front of you and 0.5 metres above you (roughly body chest height)
+        # Update the menu position 0.5 meter in front of you and 1 metre above you (roughly body chest height)
         vtk.vtkMath.MultiplyScalar(forwardVec, 0.5)
-        forwardVec[2] += 2.0
+        forwardVec[2] += 1.0
         self.__menu.SetSceneObjectPosition(forwardVec)
         
         # Update all positions

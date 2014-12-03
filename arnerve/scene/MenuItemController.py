@@ -71,27 +71,41 @@ class MenuItemController(SceneObject):
         self.__ActionMenuItem(self.__baseMenuItem)
         
     def __SetInitialOptionsHeight(self):
+        '''
+        Set the position if more than one root node is used, accounts for an even/uneven number of entries
+        '''
+        
+        # Make sure there are nodes
         if len(self.childrenObjects) > 0:
             totalHeight = 0.0
+            
+            # Get the total height
             for item in self.childrenObjects:
                 totalHeight += item.GetHeight()
+            
+            # Halve height to position nodes
             totalHeight = totalHeight / 2
+            
+            # Place all nodes at their calculated positions
             for item in self.childrenObjects:
                 position = [0.0, 0.0, 0.0]
                 position[0] = 0.0
                 position[1] = totalHeight - (item.GetHeight() / 2)
                 position[2] = 0.0
+                
                 totalHeight -= item.GetHeight()
+                
                 item.SetSceneObjectPosition(position)
-                #item.SetPosition(position)
             
     def CloseMenu(self):
         '''
         Close the menu and remove all references to nodes.
         '''
         self.SetOpen(False)
+        
         for item in self.childrenObjects:
             item.GlobalMenuClose()
+            
         # Remove all references to the menu so it is garbage collected.
         self.selectedNode = None
         self.childrenObjects = []

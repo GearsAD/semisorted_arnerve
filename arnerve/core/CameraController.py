@@ -70,9 +70,11 @@ class CameraController():
         for renderer in self.renderManager.renderers:
             camera = renderer.GetActiveCamera()
             camera.SetViewUp([0, 1, 0])
+            
+            print "[CameraController.py] Seems that there's an issue with the transmitted orientations - need to confirm and fix [GearsAD]"
+            camera.Pitch(orientation[0])
             camera.Yaw(orientation[1])
-            camera.Pitch(orientation[2])
-            camera.Roll(orientation[0])
+            camera.Roll(-orientation[2])
             
             # And reset the clipping range
             renderer.ResetCameraClippingRange()
