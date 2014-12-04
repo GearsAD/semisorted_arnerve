@@ -267,11 +267,12 @@ class MenuItemController(SceneObject):
         '''
         # Special case - current node should be in the center
         totalWidth = 0
+        totalAngle = 0
         # Traverse up the tree and calculate the total width of all the collapsed nodes
         rootMenuItem = selectedNode
         
         while type(selectedNode) is not MenuItemController:
-
+            
             totalWidth += selectedNode.GetWidth() / 2
 
             validChild = None
@@ -289,6 +290,8 @@ class MenuItemController(SceneObject):
                                                  (selectedNode.GetWidth() / 2) + (selectedNode.parent.GetWidth() / 2), 
                                                  0, #Force Y to zero.
                                                  0])
+#             selectedNode.SetSceneObjectOrientation([0, 30, 0])
+#             totalAngle += 30
             selectedNode = selectedNode.parent
             # Keep track of the root node!
             if type(selectedNode) is not MenuItemController:
@@ -299,6 +302,7 @@ class MenuItemController(SceneObject):
                                              0,
                                              0
                                              ])
+#         rootMenuItem.SetSceneObjectOrientation([0, totalAngle, 0])
     
     def CloseUnselectedMenuItems(self):
         '''

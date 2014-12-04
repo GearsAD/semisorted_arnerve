@@ -1,0 +1,21 @@
+package semisorted_arnerve;
+
+//A frame for a bot control signal
+struct bot_control_command_t
+{
+	int32_t timestamp;
+
+	//The name of the bot
+	string name;
+
+	//A value for the left wheel speed [-1, 1].
+	float botTreadVelLeft;
+	//A value for the right wheel speed [-1, 1].
+	float botTreadVelright;
+
+	//If true then will turn the lights on, otherwise off.
+	int8_t isLightsOn;
+	//If true then will turn the infrared on, otherwise off.
+	int8_t isInfraredOn;
+}
+

@@ -12,3 +12,5 @@ from user_wearable_update_t import user_wearable_update_t
 from user_update_t import user_update_t
 from wearable_update_t import wearable_update_t
 from herder_user_t import herder_user_t
+from role_request_t import role_request_t
+from role_response_t import role_response_t

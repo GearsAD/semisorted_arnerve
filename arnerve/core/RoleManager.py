@@ -4,19 +4,28 @@ Created on Nov 30, 2014
 @author: gearsad
 '''
 
+import lcm
+
+import role_request_t
+
 class RoleManager(object):
     '''
     The overall controller for the possible roles in the environment.
     '''
 
-
     def __init__(self):
         '''
         Create the roles structure.
         '''
-        
         self.__roles = []
-        
+    
+    def Attach(self, userManager, lcmManager):
+        '''
+        Attach relevant objects to the RoleManager
+        '''
+        self.__userManager = userManager
+        self.__lcmManager = lcmManager
+    
     def GetMenuItemsRolesAndCallbacks(self):
         '''
         TODO - Complete [GearsAD]
@@ -33,7 +42,18 @@ class RoleManager(object):
         '''
         Request the UserHerder to make this user an observer, which will have a callback to set the respective interactor style.
         '''
-        print "Requesting the UserHerder to make this ARNerve client an observer"
+        request = role_request_t.role_request_t()
+        
+        request.timestamp = 0
+        request.userName = self.__userManager.GetCurrentUser()
+        request.requestedRole = 0
+        request.isUpdatingRole = 0
+        request.newPlannerGroup = ""
+        request.isUpdatingPlannerGroup = 0
+        request.requestedBotNameToPilot = ""
+        request.isUpdatingBot = 0
+        
+        self.__lcmManager.SendRoleRequest(request.encode())
         
     def RequestAsCommander(self, param):
         '''
@@ -51,4 +71,21 @@ class RoleManager(object):
         '''
         Request the UserHerder to make this user a pilot of an available vechicle, which will have a callback to set the respective interactor style.
         '''
-        print "Requesting the UserHerder to make this ARNerve client a pilot"                        
+        request = role_request_t.role_request_t()
+        
+        request.timestamp = 0
+        request.userName = self.__userManager.GetCurrentUser()
+        request.requestedRole = 1
+        request.isUpdatingRole = 0
+        request.newPlannerGroup = ""
+        request.isUpdatingPlannerGroup = 0
+        request.requestedBotNameToPilot = requestedBotToPilot
+        request.isUpdatingBot = 1
+        
+        self.__lcmManager.SendRoleRequest(request.encode())   
+        
+    def ParseRoleResponse(self, roleResponse):
+        '''
+        Parse a role response and update the pilots/planners if needed
+        '''
+        return                    

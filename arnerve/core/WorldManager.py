@@ -10,7 +10,7 @@ from core import SceneManager
 from core import UserManager
 from core import BotManager
 from core import RoleManager
-from LCMUserHerderController import LCMUserHerderController
+from core import LCMManager
 
 from scene import Interactor1stPersonUser
 
@@ -24,7 +24,7 @@ class WorldManager(object):
         Create the world.
         '''
         #Initialize the RenderManager
-        self.renderManager = RenderManager.RenderManager(device, 1280, 720, 1)
+        self.renderManager = RenderManager.RenderManager(device, width, height, 0)
         #self.renderManager = RenderManager.RenderManager(device, width, height, device == "Oculus")
         self.renderManager.Initialize()
         
@@ -34,20 +34,28 @@ class WorldManager(object):
         self.roleManager = RoleManager.RoleManager()
         self.botManager = BotManager.BotManager()
         
-        self.userManager = UserManager.UserManager(self.botManager, self.roleManager, self.renderManager, name)
+        self.userManager = UserManager.UserManager(name)
         
-        self.sceneManager = SceneManager.SceneManager(self.userManager, self.renderManager, name)
+        self.sceneManager = SceneManager.SceneManager()
+
+        self.lcmManager = LCMManager.LCMManager()
+        
+        # Do all the manager attachment to other managers
+        self.lcmManager.Attach(self.userManager, self.roleManager)
+        self.roleManager.Attach(self.userManager, self.lcmManager)
+        self.sceneManager.Attach(self.userManager, self.renderManager)
+        self.userManager.Attach(self.botManager, self.roleManager, self.renderManager)
+
 
         # Create a test interactor style for the current user.
         # Generally done by the role manager.
         testInteractor = Interactor1stPersonUser.Interactor1stPersonUser(self.renderManager.renderers[0], self.renderManager.renderWindowInteractor, self.userManager, self.cameraController)
         self.renderManager.SetCurrentInteractorStyle(testInteractor)
                 
-        self.lcmController = LCMUserHerderController(self.userManager)
         
     def Start(self):
         self.CreateUpdateLoop(30)
-        self.CreateCommsLoop(10)
+        #self.CreateCommsLoop(10)
         self.renderManager.renderWindowInteractor.Start()
 
     def CreateUpdateLoop(self, frequency):
@@ -64,7 +72,7 @@ class WorldManager(object):
 
     def CommsUpdate(self, obj, event):
         #Update the LCM controller
-        self.lcmController.Update()
+        self.lcmManager.Update()
         
 
     def Shutdown(self):

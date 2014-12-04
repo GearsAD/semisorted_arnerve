@@ -1,0 +1,18 @@
+package semisorted_arnerve;
+
+//A frame for a bot update
+//Will get bigger later...
+struct bot_update_t
+{
+	int32_t timestamp;
+
+	//The name of the bot
+	string name;
+	//The camera video feed
+	int32_t numBytes_cameraFrameJpeg;
+	byte cameraFrameJpeg[numBytes_cameraFrameJpeg];
+	
+	//The percentage of the battery that is left
+	float batteryPercentage;
+}
+

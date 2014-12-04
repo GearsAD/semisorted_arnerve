@@ -14,16 +14,12 @@ class UserManager(object):
     A manager for all the users in the scene (populated by LCM, consumed everywhere :)) 
     '''
 
-    def __init__(self, botManager, roleManager, renderManager, thisUserName):
+    def __init__(self, thisUserName):
         '''
         Constructor
         '''
-        
         self.__thisUserName = thisUserName
-        self.__renderManager = renderManager
-        self.__botManager = botManager
-        self.__roleManager = roleManager
-        
+             
         self.currentUser = user_update_t()
         # Initialize him/her until LCM updates it.
         self.currentUser.kinect = kinect_update_t()
@@ -32,10 +28,18 @@ class UserManager(object):
         self.currentUser.oculus = oculus_update_t()
         print "HACK - populate a full user UserManager __init__ if you are planning on using it in the future."
         
+    def Attach(self, botManager, roleManager, renderManager):
+        '''
+        Attach the managers to the UserManager
+        '''
+        self.__renderManager = renderManager
+        self.__botManager = botManager
+        self.__roleManager = roleManager
+        
         # Create the other users.
         self.users = []
         
-        self.currentUserModel = User.User(self.__botManager, self.__roleManager, self.__renderManager, thisUserName)
+        self.currentUserModel = User.User(self.__botManager, self.__roleManager, self.__renderManager, self.__thisUserName)
         self.otherUserModels = []
         
     def UpdateUser(self, user):
@@ -64,10 +68,6 @@ class UserManager(object):
                 print "[UserManager.py] Ignoring the other user for now."
 #                 self.users.append(user)
 #                 self.otherUserModels.append(newUser)
-                
-                
-                
-                
-                
-                
-                
+
+    def GetCurrentUser(self):
+        return self.__thisUserName

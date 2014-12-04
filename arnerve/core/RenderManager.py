@@ -7,7 +7,7 @@ Created on Nov 20, 2014
 import sys
 
 import vtk
-from LCMUserHerderController import LCMUserHerderController
+from core import LCMManager
 
 class RenderManager(object):
 

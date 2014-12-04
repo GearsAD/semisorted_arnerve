@@ -15,7 +15,7 @@ from core import WorldManager
 if __name__ == '__main__':
     
     if len(sys.argv) != 5:
-        print "Run arneve with the following paramaters - name, type, width, height"
+        print "Run arneve with the following parameters - name, type, width, height"
         sys.exit()
     
     name = sys.argv[1]

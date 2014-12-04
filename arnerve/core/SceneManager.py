@@ -18,23 +18,37 @@ class SceneManager(object):
     A manager for all the objects in the scene (and their controllers).
     '''
 
-    def __init__(self, userManager, renderManager, userName):
+    def __init__(self):
         '''
         Create the world.
         '''
-        self.renderManager = renderManager
+        return
         
-        #Create the user manager
-        self.userManager = userManager
+    def Attach(self, userManager, renderManager):
+        '''
+        Attach the managers to the SceneManager
+        '''
+        self.__renderManager = renderManager
         
+        # Create the user manager
+        self.__userManager = userManager
+        
+        # When attached, build the test scene
+        self.BuildTestScene()
+        
+            
+    def BuildTestScene(self):
+        '''
+        Build a test scene.
+        '''
         #Build a test world
-        terrain = Terrain.Terrain(self.renderManager.renderers, 10)
+        terrain = Terrain.Terrain(self.__renderManager.renderers, 10)
         # Initialize a set of test bots
 
         numBots = 8
         self.bots = []
         for i in xrange(0, numBots):
-            bot = Bot.Bot(self.renderManager.renderers)
+            bot = Bot.Bot(self.__renderManager.renderers)
             # Put the bot in a cool location 
             location = [10 * cos(i / float(numBots) * 6.242), 0, 10 * sin(i / float(numBots) * 6.242)]
             bot.SetSceneObjectPosition(location)
@@ -46,4 +60,4 @@ class SceneManager(object):
             self.bots.append(bot)
     
 #         axes = Axes.Axes(self.renderManager.renderers)
-        
+          
