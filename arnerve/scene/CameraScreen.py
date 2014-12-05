@@ -14,9 +14,10 @@ class CameraScreen(SceneObject):
     # The camera texture
     cameraVtkTexture = None
     
-    def __init__(self, renderer, parent, screenDistance, width, height):
+    def __init__(self, renderer, parent, screenDistance, width, height, isActiveCamera = False):
         '''
         Initialize the CameraScreen model.
+        If you are going to stream data to it, set isActiveCamera to true in the constructor parameters and pass jpeg data to the update method.
         '''
         # Call the parent constructor
         super(CameraScreen,self).__init__(renderer, parent)
@@ -38,10 +39,13 @@ class CameraScreen(SceneObject):
         
         # Create a test picture and assign it to the screen for now...
         # Ref: http://vtk.org/gitweb?p=VTK.git;a=blob;f=Examples/Rendering/Python/TPlane.py
-        textReader = vtk.vtkPNGReader()
-        textReader.SetFileName("../scene/media/semisortedcameralogo.png")
+        if not isActiveCamera:
+            self.__textReader = vtk.vtkPNGReader()
+            self.__textReader.SetFileName("../scene/media/semisortedcameralogo.png")
+        else:
+            self.__textReader = vtk.vtkJPEGReader()
         self.cameraVtkTexture = vtk.vtkTexture()
-        self.cameraVtkTexture.SetInputConnection(textReader.GetOutputPort())
+        self.cameraVtkTexture.SetInputConnection(self.__textReader.GetOutputPort())
         self.cameraVtkTexture.InterpolateOn()        
         
         # Finally assign the mapper and the actor
@@ -49,4 +53,20 @@ class CameraScreen(SceneObject):
         planeMapper.SetInputConnection(transF.GetOutputPort())
          
         self.vtkActor.SetMapper(planeMapper)
+        self.vtkActor.SetTexture(self.cameraVtkTexture)
+
+    def SetScreenJPEGImage(self, botName, jpegData):
+        '''
+        TEMPORARY - Write the image to a file and then reroute the textureReader to this file. Need a memorybuffer later. [GearsAD]
+        '''
+#         fileName = "bot_cam_" + botName + ".jpg"
+#         f = open(fileName,"w") #opens file with name of "test.txt"
+#         f.write(jpegData)
+#         f.close()
+        # And update the video frame
+        self.__textReader.SetMemoryBufferLength(len(jpegData)) 
+        self.__textReader.SetMemoryBuffer(jpegData)
+#         self.__textReader.SetFileName(fileName)
+        self.__textReader.UpdateInformation()
+        self.cameraVtkTexture.SetInputConnection(self.__textReader.GetOutputPort())
         self.vtkActor.SetTexture(self.cameraVtkTexture)

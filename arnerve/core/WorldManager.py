@@ -41,7 +41,7 @@ class WorldManager(object):
         self.lcmManager = LCMManager.LCMManager()
         
         # Do all the manager attachment to other managers
-        self.lcmManager.Attach(self.userManager, self.roleManager)
+        self.lcmManager.Attach(self.userManager, self.roleManager, self.botManager)
         self.roleManager.Attach(self.userManager, self.lcmManager)
         self.sceneManager.Attach(self.userManager, self.renderManager)
         self.userManager.Attach(self.botManager, self.roleManager, self.renderManager)

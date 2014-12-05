@@ -61,7 +61,4 @@ class SceneManager(object):
             self.bots.append(bot)
     
 #         axes = Axes.Axes(self.renderManager.renderers)
-        
-        rover = RoverBot.RoverBot(self.__renderManager.renderers, "Girr!")
-        rover.SetSceneObjectPosition([0, 0, 2])
-          
+                  

@@ -49,10 +49,10 @@ class BotManager(object):
         if(found is not True):
             newBot = RoverBot(self.__renderManager.renderers, updateBot.name)
             print "Adding another bot - moving him away from the axis! Remove in future."
-            newBot.vtkActor.SetPosition([0, 0, 10])
+            newBot.vtkActor.SetPosition([0, 0, 1])
             print "[BotManager.py] Ignoring the other user for now."
-            self.users.append(updateBot)
-            self.otherUserModels.append(newBot)
+            self.__botsLCM.append(updateBot)
+            self.__botModels.append(newBot)
         
     def GetMenuItemsBotsAndCallbacks(self):
         '''

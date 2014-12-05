@@ -33,7 +33,7 @@ class Interactor1stPersonUser(InteractorSuperclass):
         userCenter = self.__userManager.currentUserModel.vtkActor.GetPosition()
         headRelativePos = [
                            user.kinect.headposition.position[0],
-                           user.kinect.headposition.position[1],
+                           user.kinect.headposition.position[1]+0.2,
                            user.kinect.headposition.position[2]-1,
                            ]
         headRelativeTarget = [

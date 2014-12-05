@@ -28,12 +28,13 @@ class LCMManager():
         # Add all the bot channels.
         self.__subscriptions.append(self.lc.subscribe("ARNerve_Bot_Update_GIRR", self.UpdateBot))
 
-    def Attach(self, userManager, roleManager):
+    def Attach(self, userManager, roleManager, botManager):
         '''
         Attach relevant objects to the RoleManager
         '''
         self.__userManager = userManager
         self.__roleManager = roleManager
+        self.__botManager = botManager
 
     def UpdateUsersHandler(self, channel, data):
         '''
@@ -81,6 +82,7 @@ class LCMManager():
         '''
         botUpdate = bot_update_t.decode(data)
         print "[LCMManager] Got an update for bot {0}".format(botUpdate.name)
+        self.__botManager.UpdateBotFromLCM(botUpdate)
         return
           
     def Update(self):
