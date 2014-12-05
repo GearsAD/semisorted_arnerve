@@ -28,6 +28,9 @@ class UserManager(object):
         self.currentUser.oculus = oculus_update_t()
         print "HACK - populate a full user UserManager __init__ if you are planning on using it in the future."
         
+        # Save the state of the last user position
+        self.__lastCurrentUser = self.currentUser
+        
     def Attach(self, botManager, roleManager, renderManager):
         '''
         Attach the managers to the UserManager
@@ -42,13 +45,21 @@ class UserManager(object):
         self.currentUserModel = User.User(self.__botManager, self.__roleManager, self.__renderManager, self.__thisUserName)
         self.otherUserModels = []
         
-    def UpdateUser(self, user):
+    def Update(self):
+        '''
+        Update the current user
+        '''
+        isHandSelecting = (self.__lastCurrentUser.kinect.is_lhandclosed == 1 and self.currentUser.kinect.is_lhandclosed == 0)
+        
+        self.currentUserModel.Update(isHandSelecting)
+        
+    def UpdateUserFromLCM(self, user):
         '''
         Method to update the users list with a new or current user.
         '''
         if(user.name == self.__thisUserName):
             self.currentUser = user
-            self.currentUserModel.UpdateUser(self.currentUser)
+            self.currentUserModel.UpdateUserFromLCM(self.currentUser)
             print "Oculus Orientation for {0} = {1}, {2}, {3}".format(user.name, user.oculus.headorientation[0],user.oculus.headorientation[1], user.oculus.headorientation[2])
         else:
             #Update the other users
@@ -57,7 +68,7 @@ class UserManager(object):
             for myUser in self.users:
                 if(myUser.name == user.name): #Update this user
                     self.users[index] = user #Replace the user, we found it
-                    self.otherUserModels[index].UpdateUser(user)
+                    self.otherUserModels[index].UpdateUserFromLCM(user)
                     found = True
                 else:
                     index = index + 1

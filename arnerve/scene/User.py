@@ -11,6 +11,7 @@ from user_update_t import user_update_t
 from scene import MenuItem
 from scene import MenuItemController
 from scene import Hand
+from math import sin
 
 class User(SceneObject):
     '''
@@ -38,6 +39,8 @@ class User(SceneObject):
         # By default center his torso at 1 metre up.
         self.SetSceneObjectPosition([0, 0, 0])
         
+        self.__timeUpdate = 0.0
+                
     def __setupChildren(self, renderers):
         '''
         Configure the children for this user - camera and other sensors.
@@ -83,8 +86,24 @@ class User(SceneObject):
 #         self.Menu.relativePosition = [0, 0, 1]
 #         self.Menu.BuildTestMenu()
 #         self.childrenObjects.append(self.Menu)
+    
+    def Update(self, isLeftHandSelecting):
+        '''
+        Update the current user - specifically the current user, do not run this for every user.
+        '''
+        
+        #HACK
+        self.__timeUpdate += 0.03
+        self.lHand.SetSceneObjectPosition([0, 0.5 * sin(2.0 * 3.141 * self.__timeUpdate / 4.0), 0])
+        
+        if(self.__menu.GetOpen() == True):
+            # Use the bounds to get a quick 'centroid' measurement that is absolute
+            bounds = self.lHand.vtkActor.GetBounds()
+            handPos = [(bounds[0] + bounds[1])/ 2.0, (bounds[2] + bounds[3])/ 2.0, (bounds[4] + bounds[5])/ 2.0]
+            
+            self.__menu.UpdateMenuSelect(handPos, isLeftHandSelecting)
       
-    def UpdateUser(self, update_user):
+    def UpdaxteUserFromLCM(self, update_user):
         '''
         Update the user from a direct LCM frame of this user
         '''
@@ -140,12 +159,5 @@ class User(SceneObject):
         self.SetHandVisibility(True) 
         if(self.__menu.GetOpen() == False):
             self.__menu.OpenMenu()
-        
-            
-            
-            
-            
-            
-            
-            
+           
             

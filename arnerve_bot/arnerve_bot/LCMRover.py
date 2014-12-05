@@ -28,7 +28,7 @@ class LCMRover(rover.Rover):
         '''        
         self.__botname = botname
         
-        self.__lcm = lcm.LCM()
+        self.__lcm = lcm.LCM("udpm://239.255.76.67:7667?ttl=1")
         
         self.__controlSubscription = self.__lcm.subscribe("ARNerve_Bot_Control_" + self.__botname, self.UpdateBotControlHandler)
         
@@ -40,6 +40,7 @@ class LCMRover(rover.Rover):
         #try:
             
             camUpdate = bot_update_t()
+            camUpdate.name = self.__botname
             camUpdate.numBytes_cameraFrameJpeg = len(jpegbytes)
             camUpdate.cameraFrameJpeg = jpegbytes
             # Get the battery health as well
@@ -72,6 +73,7 @@ class LCMRover(rover.Rover):
             return 
         
         self.setTreads(controlParams.botTreadVelLeft, controlParams.botTreadVelright)
+        print "Setting the treads to {0}, {1}".format(controlParams.botTreadVelLeft, controlParams.botTreadVelright)
         if self.__lightsOn != controlParams.isLightsOn:
             if controlParams.isLightsOn != 0:
                 self.turnLightsOn()

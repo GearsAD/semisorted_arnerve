@@ -66,6 +66,8 @@ class MenuItem(SceneObject):
         textPos = 83.0 
         textOffset = -planeWidth / 2.0 + textPos / textureWidth * planeWidth #Special calc = left edge [which is -width / 2] + pixel position of text [83] / (total pixel width of texture [258]) * total surface width [width]
         
+        self.__isHighlighted = False
+        
         self.__textItem = Text(self.__renderManager.renderers, self, name, height/4.0, [textOffset, -height * 1.0 / 8.0, 0.01])
         # Turn off picking for the text.
         self.__textItem.vtkActor.PickableOff()
@@ -177,6 +179,26 @@ class MenuItem(SceneObject):
                 if type(item) is MenuItem:
                     item.SetVisible(True)
     
+    def SetHighlightOn(self):
+        ''' 
+        Tell the object to highlight
+        '''
+        if not self.__isHighlighted:
+            origPos = self.GetSceneObjectPosition()
+            self.SetSceneObjectPosition([origPos[0], origPos[1], origPos[2]+0.15])
+            self.vtkActor.SetTexture(self.__selectedTexture)
+            self.__isHighlighted = True
+        
+    def SetHighlightOff(self):
+        ''' 
+        Tell the object to highlight
+        '''
+        if self.__isHighlighted:
+            origPos = self.GetSceneObjectPosition()
+            self.SetSceneObjectPosition([origPos[0], origPos[1], origPos[2]-0.15])
+            self.vtkActor.SetTexture(self.__unselectedTexture)
+            self.__isHighlighted = False
+        
     def CloseMenuItem(self):
         '''
         Close the MenuItem, set the visibility and set the texture, recursive function

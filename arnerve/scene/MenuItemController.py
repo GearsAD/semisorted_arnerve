@@ -316,6 +316,64 @@ class MenuItemController(SceneObject):
                     item.SetOpen(False)
                     item.SetVisible(False)
     
+    def UpdateMenuSelect(self, handPosInThreeSpace, handIsSelecting):
+        '''
+        Update the menu selection and pick if necessary
+        '''
+        # First clear the menu highlighting
+        self.__ClearHighlighting()
+        # Get the lighted item
+        highlightedItem = self.__GetHighlightedMenuItem(handPosInThreeSpace)
+        # Check whether it is selected.
+        if(highlightedItem is not None):
+            if handIsSelecting: #Trigger the menu item
+                self.__ActionMenuItem(highlightedItem)
+            else:
+                # Highlight the node here
+                highlightedItem.SetHighlightOn()
+                
+    def __ClearHighlighting(self):
+        '''
+        Clear the menu item highlighting
+        '''
+        testableItems = []
+        testableItems = self.__BuildListOfVisibleMenuItems(self.__baseMenuItem, testableItems)
+        for item in testableItems:
+            item.SetHighlightOff()
+    
+    def __GetHighlightedMenuItem(self, handPosInThreeSpace):
+        '''
+        Return the visible menu item that is closest to the hand [Gears quick-fix, need to make this more robust]
+        '''
+        closestMenuItem = None
+        distance = 10000000 #A big number
+        testableItems = []
+        testableItems = self.__BuildListOfVisibleMenuItems(self.__baseMenuItem, testableItems)
+        for item in testableItems:
+            # Use the bounds to quickly calculate the final absolute point
+            bounds = item.vtkActor.GetBounds()
+            # Average this to find the 'centroid' position of this menuitem
+            itemPos = [(bounds[0] + bounds[1])/ 2.0, (bounds[2] + bounds[3])/ 2.0, (bounds[4] + bounds[5])/ 2.0]
+            # Confirm that these points are absolute, transformed coordinates, not relative [GearsAD]
+            dist = vtk.vtkMath.Distance2BetweenPoints(itemPos, handPosInThreeSpace)
+            if dist < distance:
+                distance = dist
+                closestMenuItem = item
+        
+        return closestMenuItem  
+        
+    def __BuildListOfVisibleMenuItems(self, baseMenuItem, visibleMenuItems):
+        '''
+        Get a list of all visible menu items
+        '''
+        if baseMenuItem.GetVisible() is True:
+            visibleMenuItems.append(baseMenuItem)
+        for child in baseMenuItem.childrenObjects:
+            if type(child) is MenuItem.MenuItem:
+                visibleMenuItems = self.__BuildListOfVisibleMenuItems(child, visibleMenuItems)
+        
+        return visibleMenuItems
+    
     def __BuildMenu(self):
         '''
         Build the main menu.

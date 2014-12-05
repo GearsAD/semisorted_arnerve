@@ -67,6 +67,12 @@ class WorldManager(object):
         self.__CommsLoopTimerId = self.renderManager.renderWindowInteractor.CreateRepeatingTimer(frequency)
 
     def WorldUpdate(self, obj, event):
+        '''
+        Update the general world and rerender
+        '''
+        #Update the user
+        self.userManager.Update()
+        
         #Update the render
         self.renderManager.RenderUpdate()
 

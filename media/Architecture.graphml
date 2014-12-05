@@ -703,11 +703,10 @@ headtracking updates<y:LabelModel>
           <y:Geometry height="221.19952173297503" width="252.993963606578" x="907.3590825025906" y="903.7797240692707"/>
           <y:Fill color="#3366FF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="115.75" modelName="custom" textColor="#000000" visible="true" width="240.068359375" x="6.462802115789003" y="52.724760866487486"> LCM Frame: role_response_t
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="101.78125" modelName="custom" textColor="#000000" visible="true" width="240.068359375" x="6.462802115788918" y="59.709135866487486"> LCM Frame: role_response_t
 
 - System Data:
   - Timestamp (relative)
-  - User name
   - Original Role request: role_request_t
 
 - Is accepted?<y:LabelModel>

@@ -30,7 +30,7 @@ class LCMManager():
         '''
         msg = user_update_t.decode(data)
         if(self.__userManager):
-            self.__userManager.UpdateUser(msg)
+            self.__userManager.UpdateUserFromLCM(msg)
     
     def UpdateFromRoleResponse(self, channel, data):
         '''

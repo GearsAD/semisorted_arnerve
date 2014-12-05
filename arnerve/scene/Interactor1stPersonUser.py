@@ -34,7 +34,7 @@ class Interactor1stPersonUser(InteractorSuperclass):
         headRelativePos = [
                            user.kinect.headposition.position[0],
                            user.kinect.headposition.position[1],
-                           user.kinect.headposition.position[2]-3,
+                           user.kinect.headposition.position[2]-1,
                            ]
         headRelativeTarget = [
                            user.kinect.headposition.position[0],
