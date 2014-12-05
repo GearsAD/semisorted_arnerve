@@ -7,6 +7,7 @@ from scene import Terrain
 from scene import Bot
 from scene import Axes
 from scene import User
+from scene import RoverBot
 
 from core import UserManager
 
@@ -60,4 +61,7 @@ class SceneManager(object):
             self.bots.append(bot)
     
 #         axes = Axes.Axes(self.renderManager.renderers)
+        
+        rover = RoverBot.RoverBot(self.__renderManager.renderers, "Girr!")
+        rover.SetSceneObjectPosition([0, 0, 2])
           

@@ -22,7 +22,7 @@ class RoverBot(SceneObject):
         # Call the parent constructor
         super(RoverBot,self).__init__(renderers)
         
-        filename = "../scene/media/bot.stl"
+        filename = "../scene/media/rover.stl"
         
         self.__name = name
          
@@ -31,6 +31,7 @@ class RoverBot(SceneObject):
         
         # Do the internal transforms to make it look along unit-z, do it with a quick transform
         trans = vtk.vtkTransform()
+        trans.Scale(0.05, 0.05, 0.05)
         trans.RotateX(-90)
         transF = vtk.vtkTransformPolyDataFilter()
         transF.SetInputConnection(reader.GetOutputPort())
@@ -54,14 +55,14 @@ class RoverBot(SceneObject):
         Configure the children for this bot - camera and other sensors.
         '''
         # Create a camera screen and set the child's offset.
-        self.camScreen = CameraScreen.CameraScreen(renderer, self, 3, 4, 3)
-        self.camScreen.SetSceneObjectPosition([0, 2.5, 0])
+        self.camScreen = CameraScreen.CameraScreen(renderer, self, 0.5, 4/3, 1)
+        self.camScreen.SetSceneObjectPosition([0, 0.25, 0])
         # Add it to the bot's children
         self.childrenObjects.append(self.camScreen)
          
         # Create the LIDAR template and set it to the child's offset as well         
-        self.lidar = LIDAR.LIDAR(renderer, self, -90, 90, 180, -22.5, 22.5, 45, 5, 15, 5)
-        self.lidar.SetSceneObjectPosition([0, 2.5, 0])
+        self.lidar = LIDAR.LIDAR(renderer, self, -45, 45, 180, -12.5, 12.5, 25, 3, 7, 4)
+        self.lidar.SetSceneObjectPosition([0, 0.25, 0])
         # Add it to the bot's children
         self.childrenObjects.append(self.lidar)
                  
