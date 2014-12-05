@@ -4,27 +4,27 @@ Created on Aug 5, 2014
 @author: gearsad
 '''
 import vtk
-import numpy
 from SceneObject import SceneObject
 from scene import CameraScreen
 from scene import LIDAR
-from scene import MenuItem
-from scene import MenuItemController
 
+from bot_update_t import bot_update_t
 
-class Bot(SceneObject):
+class RoverBot(SceneObject):
     '''
-    A template for loading complex models.
+    A roverbot.
     '''
     
-    def __init__(self, renderers):
+    def __init__(self, renderers, name):
         '''
         Initialize the bot model.
         '''
         # Call the parent constructor
-        super(Bot,self).__init__(renderers)
+        super(RoverBot,self).__init__(renderers)
         
         filename = "../scene/media/bot.stl"
+        
+        self.__name = name
          
         reader = vtk.vtkSTLReader()
         reader.SetFileName(filename)

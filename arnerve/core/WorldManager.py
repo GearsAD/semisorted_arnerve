@@ -45,7 +45,7 @@ class WorldManager(object):
         self.roleManager.Attach(self.userManager, self.lcmManager)
         self.sceneManager.Attach(self.userManager, self.renderManager)
         self.userManager.Attach(self.botManager, self.roleManager, self.renderManager)
-
+        self.botManager.Attach(self.roleManager, self.renderManager, self.lcmManager)
 
         # Create a test interactor style for the current user.
         # Generally done by the role manager.

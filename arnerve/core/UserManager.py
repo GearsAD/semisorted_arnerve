@@ -50,8 +50,11 @@ class UserManager(object):
         Update the current user
         '''
         isHandSelecting = (self.__lastCurrentUser.kinect.is_lhandclosed == 1 and self.currentUser.kinect.is_lhandclosed == 0)
+        self.__lastCurrentUser = self.currentUser
         
         self.currentUserModel.Update(isHandSelecting)
+        
+        
         
     def UpdateUserFromLCM(self, user):
         '''
@@ -60,7 +63,7 @@ class UserManager(object):
         if(user.name == self.__thisUserName):
             self.currentUser = user
             self.currentUserModel.UpdateUserFromLCM(self.currentUser)
-            print "Oculus Orientation for {0} = {1}, {2}, {3}".format(user.name, user.oculus.headorientation[0],user.oculus.headorientation[1], user.oculus.headorientation[2])
+#             print "Oculus Orientation for {0} = {1}, {2}, {3}".format(user.name, user.oculus.headorientation[0],user.oculus.headorientation[1], user.oculus.headorientation[2])
         else:
             #Update the other users
             found = False
@@ -73,12 +76,11 @@ class UserManager(object):
                 else:
                     index = index + 1
             if(found is not True):
-#                 newUser = User.User(self.__renderers, user.name)
+                newUser = User.User(self.__renderManager.renderers, user.name)
                 print "Adding another user - moving him away from the axis! Remove in future."
-#                 newUser.vtkActor.SetPosition([0, 0, 10])
-                print "[UserManager.py] Ignoring the other user for now."
-#                 self.users.append(user)
-#                 self.otherUserModels.append(newUser)
+                newUser.vtkActor.SetPosition([0, 0, 10])
+                self.users.append(user)
+                self.otherUserModels.append(newUser)
 
     def GetCurrentUser(self):
         return self.__thisUserName

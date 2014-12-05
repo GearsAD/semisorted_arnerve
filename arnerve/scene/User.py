@@ -39,8 +39,6 @@ class User(SceneObject):
         # By default center his torso at 1 metre up.
         self.SetSceneObjectPosition([0, 0, 0])
         
-        self.__timeUpdate = 0.0
-                
     def __setupChildren(self, renderers):
         '''
         Configure the children for this user - camera and other sensors.
@@ -75,7 +73,7 @@ class User(SceneObject):
         
         # Create a menu for the user.
         self.__menu = MenuItemController.MenuItemController(self.__botManager, self.__roleManager, self.__renderManager, self, renderers[0].GetRenderWindow().GetInteractor(), "UserMenu")
-        self.__menu.SetSceneObjectPosition([0, 0, 0.5])
+        self.__menu.SetSceneObjectPosition([0, 0.5, 0.5])
         self.__menu.SetSceneObjectOrientation([0, 180, 0])
 
 #         self.headPointerCylinder = Cylinder.Cylinder(renderers, 0.05, 0.3, [90, 0, 0], [0, 0, 0.25])
@@ -92,10 +90,6 @@ class User(SceneObject):
         Update the current user - specifically the current user, do not run this for every user.
         '''
         
-        #HACK
-        self.__timeUpdate += 0.03
-        self.lHand.SetSceneObjectPosition([0, 0.5 * sin(2.0 * 3.141 * self.__timeUpdate / 4.0), 0])
-        
         if(self.__menu.GetOpen() == True):
             # Use the bounds to get a quick 'centroid' measurement that is absolute
             bounds = self.lHand.vtkActor.GetBounds()
@@ -103,7 +97,7 @@ class User(SceneObject):
             
             self.__menu.UpdateMenuSelect(handPos, isLeftHandSelecting)
       
-    def UpdaxteUserFromLCM(self, update_user):
+    def UpdateUserFromLCM(self, update_user):
         '''
         Update the user from a direct LCM frame of this user
         '''
@@ -133,9 +127,10 @@ class User(SceneObject):
         self.rHand.SetSceneObjectPosition(update_user.kinect.rhandposition.position)
 
         # Update the menu position 0.5 meter in front of you and 1 metre above you (roughly body chest height)
-        vtk.vtkMath.MultiplyScalar(forwardVec, 0.5)
-        forwardVec[2] += 1.0
-        self.__menu.SetSceneObjectPosition(forwardVec)
+#        vtk.vtkMath.MultiplyScalar(forwardVec, 0.5)
+#        menuVec = []
+ #       forwardVec[2] += 1.0
+ #       self.__menu.SetSceneObjectPosition(forwardVec)
         
         # Update all positions
         self.SetSceneObjectPosition(self.GetSceneObjectPosition())

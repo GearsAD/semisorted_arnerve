@@ -44,26 +44,26 @@ class LCMManager():
             self.__userManager.UpdateUserFromLCM(msg)
             
         #HACK TESTING...
-        botControl = bot_control_command_t()
-        botControl.name = "GIRR"
-        botControl.botTreadVelLeft = 0
-        botControl.botTreadVelLeft = 0
-        if msg.kinect.is_lhandclosed and msg.kinect.is_rhandclosed:
-            botControl.botTreadVelLeft = 1.0
-            botControl.botTreadVelright = 1.0
-        else:
-            if msg.kinect.is_lhandclosed:
-                print "---Left Hand CLosed!"
-                botControl.botTreadVelLeft = 1.0
-                botControl.botTreadVelright = -1.0
-            if msg.kinect.is_rhandclosed:
-                print "---Right Hand CLosed!"
-                botControl.botTreadVelLeft = -1.0
-                botControl.botTreadVelright = 1.0
-        botControl.isInfraredOn = 0
-        botControl.isLightsOn = 0
-        botControl.timestamp = 0
-        self.lc.publish("ARNerve_Bot_Control_GIRR", botControl.encode())
+#         botControl = bot_control_command_t()
+#         botControl.name = "GIRR"
+#         botControl.botTreadVelLeft = 0
+#         botControl.botTreadVelLeft = 0
+#         if msg.kinect.is_lhandclosed and msg.kinect.is_rhandclosed:
+#             botControl.botTreadVelLeft = 1.0
+#             botControl.botTreadVelright = 1.0
+#         else:
+#             if msg.kinect.is_lhandclosed:
+#                 print "---Left Hand CLosed!"
+#                 botControl.botTreadVelLeft = 1.0
+#                 botControl.botTreadVelright = -1.0
+#             if msg.kinect.is_rhandclosed:
+#                 print "---Right Hand CLosed!"
+#                 botControl.botTreadVelLeft = -1.0
+#                 botControl.botTreadVelright = 1.0
+#         botControl.isInfraredOn = 0
+#         botControl.isLightsOn = 0
+#         botControl.timestamp = 0
+#         self.lc.publish("ARNerve_Bot_Control_GIRR", botControl.encode())
         
     
     def UpdateFromRoleResponse(self, channel, data):
