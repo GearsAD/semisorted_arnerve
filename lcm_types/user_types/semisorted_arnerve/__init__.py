@@ -14,3 +14,6 @@ from wearable_update_t import wearable_update_t
 from herder_user_t import herder_user_t
 from role_request_t import role_request_t
 from role_response_t import role_response_t
+from kinect_bodyframe_update_t import kinect_bodyframe_update_t
+from kinect_camera_update_t import kinect_camera_update_t
+from kinect_body_update_t import kinect_body_update_t

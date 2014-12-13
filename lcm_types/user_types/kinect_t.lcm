@@ -8,13 +8,8 @@ struct kinect_joint_t
 	byte istracking;
 }
 
-struct kinect_rawdata_t
+struct kinect_bodyframe_update_t
 {
-	// Depth and rgb images
-	int32_t NUMRGBBYTES;
-	int32_t NUMDEPTHBYTES;
-	int8_t imagejpg_rgb[NUMRGBBYTES];
-	int8_t imagejpg_depth[NUMDEPTHBYTES];
 	// The raw joints	
 	kinect_joint_t bodyjoints[25];	
 	
@@ -120,12 +115,30 @@ struct kinect_rawdata_t
 	const int8_t ThumbRight = 24;
 }
 
-//A frame for the bot info which will be transferred to the vtkGUI.
-//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
-struct kinect_update_t
+struct kinect_camera_update_t
 {
-	int64_t timestamp; //The timestamp of the current frame in ms
-	byte issourceupdating;
+	// Depth and rgb images
+	int32_t NUMRGBBYTES;
+	int32_t NUMRGBSMALLBYTES;
+	int32_t NUMDEPTHBYTES_WIDTH;
+	int32_t NUMDEPTHBYTES_HEIGHT;
+	
+	//The full 1920x1080 image.
+	byte rgb_jpg[NUMRGBBYTES];
+	//A shrunken 320x180 image for reference.
+	byte rgb_small_jpg[NUMRGBSMALLBYTES];
+	float depth[NUMDEPTHBYTES_WIDTH][NUMDEPTHBYTES_HEIGHT];
+	byte issourceupdating_rgb;
+	byte issourceupdating_sgb_small;
+	byte issourceupdating_depth;
+}
+
+//A frame for a single user which will be transferred to the ARNerve.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct kinect_body_update_t
+{
+	//The user name.
+	string username;
 	
 	byte istrackingbody;
 
@@ -146,5 +159,22 @@ struct kinect_update_t
 	kinect_joint_t headposition;
 
 	// The raw data frame
-	kinect_rawdata_t rawkinectdata;		
+	kinect_bodyframe_update_t joint_data;		
 }
+
+//A frame containing all the users, their bodyframes, and the camera data which can be transferred to ARNerve.
+struct kinect_update_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+	string devicename;
+
+	kinect_camera_update_t camera_update;
+	byte issourceupdating_camera;
+
+	int8_t NUMBODIES;
+	kinect_body_update_t bodies_update[NUMBODIES];
+	byte issourceupdating_bodies;
+}
+
+
+

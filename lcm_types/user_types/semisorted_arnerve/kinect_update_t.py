@@ -6,28 +6,21 @@ DO NOT MODIFY BY HAND!!!!
 import cStringIO as StringIO
 import struct
 
-import kinect_rawdata_t
+import kinect_camera_update_t
 
-import kinect_joint_t
+import kinect_body_update_t
 
 class kinect_update_t(object):
-    __slots__ = ["timestamp", "issourceupdating", "istrackingbody", "torsoposition", "forwardvec", "upvec", "rightvec", "is_rhandclosed", "is_lhandclosed", "rhandposition", "lhandposition", "headorientation", "headposition", "rawkinectdata"]
+    __slots__ = ["timestamp", "devicename", "camera_update", "issourceupdating_camera", "NUMBODIES", "bodies_update", "issourceupdating_bodies"]
 
     def __init__(self):
         self.timestamp = 0
-        self.issourceupdating = 0
-        self.istrackingbody = 0
-        self.torsoposition = None
-        self.forwardvec = [ 0.0 for dim0 in range(3) ]
-        self.upvec = [ 0.0 for dim0 in range(3) ]
-        self.rightvec = [ 0.0 for dim0 in range(3) ]
-        self.is_rhandclosed = 0
-        self.is_lhandclosed = 0
-        self.rhandposition = None
-        self.lhandposition = None
-        self.headorientation = [ 0.0 for dim0 in range(3) ]
-        self.headposition = None
-        self.rawkinectdata = None
+        self.devicename = ""
+        self.camera_update = None
+        self.issourceupdating_camera = 0
+        self.NUMBODIES = 0
+        self.bodies_update = []
+        self.issourceupdating_bodies = 0
 
     def encode(self):
         buf = StringIO.StringIO()
@@ -36,22 +29,18 @@ class kinect_update_t(object):
         return buf.getvalue()
 
     def _encode_one(self, buf):
-        buf.write(struct.pack(">qBB", self.timestamp, self.issourceupdating, self.istrackingbody))
-        assert self.torsoposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
-        self.torsoposition._encode_one(buf)
-        buf.write(struct.pack('>3d', *self.forwardvec[:3]))
-        buf.write(struct.pack('>3d', *self.upvec[:3]))
-        buf.write(struct.pack('>3d', *self.rightvec[:3]))
-        buf.write(struct.pack(">BB", self.is_rhandclosed, self.is_lhandclosed))
-        assert self.rhandposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
-        self.rhandposition._encode_one(buf)
-        assert self.lhandposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
-        self.lhandposition._encode_one(buf)
-        buf.write(struct.pack('>3d', *self.headorientation[:3]))
-        assert self.headposition._get_packed_fingerprint() == kinect_joint_t.kinect_joint_t._get_packed_fingerprint()
-        self.headposition._encode_one(buf)
-        assert self.rawkinectdata._get_packed_fingerprint() == kinect_rawdata_t.kinect_rawdata_t._get_packed_fingerprint()
-        self.rawkinectdata._encode_one(buf)
+        buf.write(struct.pack(">q", self.timestamp))
+        __devicename_encoded = self.devicename.encode('utf-8')
+        buf.write(struct.pack('>I', len(__devicename_encoded)+1))
+        buf.write(__devicename_encoded)
+        buf.write("\0")
+        assert self.camera_update._get_packed_fingerprint() == kinect_camera_update_t.kinect_camera_update_t._get_packed_fingerprint()
+        self.camera_update._encode_one(buf)
+        buf.write(struct.pack(">Bb", self.issourceupdating_camera, self.NUMBODIES))
+        for i0 in range(self.NUMBODIES):
+            assert self.bodies_update[i0]._get_packed_fingerprint() == kinect_body_update_t.kinect_body_update_t._get_packed_fingerprint()
+            self.bodies_update[i0]._encode_one(buf)
+        buf.write(struct.pack(">B", self.issourceupdating_bodies))
 
     def decode(data):
         if hasattr(data, 'read'):
@@ -65,17 +54,15 @@ class kinect_update_t(object):
 
     def _decode_one(buf):
         self = kinect_update_t()
-        self.timestamp, self.issourceupdating, self.istrackingbody = struct.unpack(">qBB", buf.read(10))
-        self.torsoposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
-        self.forwardvec = struct.unpack('>3d', buf.read(24))
-        self.upvec = struct.unpack('>3d', buf.read(24))
-        self.rightvec = struct.unpack('>3d', buf.read(24))
-        self.is_rhandclosed, self.is_lhandclosed = struct.unpack(">BB", buf.read(2))
-        self.rhandposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
-        self.lhandposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
-        self.headorientation = struct.unpack('>3d', buf.read(24))
-        self.headposition = kinect_joint_t.kinect_joint_t._decode_one(buf)
-        self.rawkinectdata = kinect_rawdata_t.kinect_rawdata_t._decode_one(buf)
+        self.timestamp = struct.unpack(">q", buf.read(8))[0]
+        __devicename_len = struct.unpack('>I', buf.read(4))[0]
+        self.devicename = buf.read(__devicename_len)[:-1].decode('utf-8', 'replace')
+        self.camera_update = kinect_camera_update_t.kinect_camera_update_t._decode_one(buf)
+        self.issourceupdating_camera, self.NUMBODIES = struct.unpack(">Bb", buf.read(2))
+        self.bodies_update = []
+        for i0 in range(self.NUMBODIES):
+            self.bodies_update.append(kinect_body_update_t.kinect_body_update_t._decode_one(buf))
+        self.issourceupdating_bodies = struct.unpack(">B", buf.read(1))[0]
         return self
     _decode_one = staticmethod(_decode_one)
 
@@ -83,7 +70,7 @@ class kinect_update_t(object):
     def _get_hash_recursive(parents):
         if kinect_update_t in parents: return 0
         newparents = parents + [kinect_update_t]
-        tmphash = (0xfd475b70f54a5e35+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_joint_t.kinect_joint_t._get_hash_recursive(newparents)+ kinect_rawdata_t.kinect_rawdata_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
+        tmphash = (0xa125faa6329b8057+ kinect_camera_update_t.kinect_camera_update_t._get_hash_recursive(newparents)+ kinect_body_update_t.kinect_body_update_t._get_hash_recursive(newparents)) & 0xffffffffffffffff
         tmphash  = (((tmphash<<1)&0xffffffffffffffff)  + (tmphash>>63)) & 0xffffffffffffffff
         return tmphash
     _get_hash_recursive = staticmethod(_get_hash_recursive)
