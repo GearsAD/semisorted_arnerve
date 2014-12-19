@@ -116,7 +116,7 @@ if __name__ == '__main__':
     currentImage = apriltags_clibrary.image_u8_create(1920, 1080)
     
     #Ref http://docs.opencv.org/modules/highgui/doc/reading_and_writing_images_and_video.html
-    videoWriter = cv2.VideoWriter("output.avi", cv2.cv.FOURCC('X', 'V', 'I', 'D'), 20, (1920/2, 1080/2) )
+    videoWriter = cv2.VideoWriter("outputBot.avi", cv2.cv.FOURCC('X', 'V', 'I', 'D'), 20, (1920/2, 1080/2) )
     #newImg = cv2.imread('/home/gearsad/semisorted_arnerve/arnerve_bot/apriltags_interpreter/Debug/test_goodstride.pnm', 0)
     #ProcessImageForAprilTags(newImg)
     #Ref: http://stackoverflow.com/questions/8163976/how-python-can-get-binary-datachar-from-c-by-swig
