@@ -1,0 +1,180 @@
+package semisorted_arnerve;
+
+// A simple template for a kinect joint
+struct kinect_joint_t
+{
+	double position[3];
+	double orientation[4];
+	byte istracking;
+}
+
+struct kinect_bodyframe_update_t
+{
+	// The raw joints	
+	kinect_joint_t bodyjoints[25];	
+	
+	//Copied from the K4W enumeration so they match up.
+	// Summary:
+	//     Base of the spine.
+	const int8_t SpineBase = 0;
+	//
+	// Summary:
+	//     Middle of the spine.
+	const int8_t SpineMid = 1;
+	//
+	// Summary:
+	//     Neck.
+	const int8_t Neck = 2;
+	//
+	// Summary:
+	//     Head.
+	const int8_t Head = 3;
+	//
+	// Summary:
+	//     Left shoulder.
+	const int8_t ShoulderLeft = 4;
+	//
+	// Summary:
+	//     Left elbow.
+	const int8_t ElbowLeft = 5;
+	//
+	// Summary:
+	//     Left wrist.
+	const int8_t WristLeft = 6;
+	//
+	// Summary:
+	//     Left hand.
+	const int8_t HandLeft = 7;
+	//
+	// Summary:
+	//     Right shoulder.
+	const int8_t ShoulderRight = 8;
+	//
+	// Summary:
+	//     Right elbow.
+	const int8_t ElbowRight = 9;
+	//
+	// Summary:
+	//     Right wrist.
+	const int8_t WristRight = 10;
+	//
+	// Summary:
+	//     Right hand.
+	const int8_t HandRight = 11;
+	//
+	// Summary:
+	//     Left hip.
+	const int8_t HipLeft = 12;
+	//
+	// Summary:
+	//     Left knee.
+	const int8_t KneeLeft = 13;
+	//
+	// Summary:
+	//     Left ankle.
+	const int8_t AnkleLeft = 14;
+	//
+	// Summary:
+	//     Left foot.
+	const int8_t FootLeft = 15;
+	//
+	// Summary:
+	//     Right hip.
+	const int8_t HipRight = 16;
+	//
+	// Summary:
+	//     Right knee.
+	const int8_t KneeRight = 17;
+	//
+	// Summary:
+	//     Right ankle.
+	const int8_t AnkleRight = 18;
+	//
+	// Summary:
+	//     Right foot.
+	const int8_t FootRight = 19;
+	//
+	// Summary:
+	//     Between the shoulders on the spine.
+	const int8_t SpineShoulder = 20;
+	//
+	// Summary:
+	//     Tip of the left hand.
+	const int8_t HandTipLeft = 21;
+	//
+	// Summary:
+	//     Left thumb.
+	const int8_t ThumbLeft = 22;
+	//
+	// Summary:
+	//     Tip of the right hand.
+	const int8_t HandTipRight = 23;
+	//
+	// Summary:
+	//     Right thumb.
+	const int8_t ThumbRight = 24;
+}
+
+struct kinect_camera_update_t
+{
+	// Depth and rgb images
+	int32_t NUMRGBBYTES;
+	int32_t NUMRGBSMALLBYTES;
+	int32_t NUMDEPTHBYTES_WIDTH;
+	int32_t NUMDEPTHBYTES_HEIGHT;
+	
+	//The full 1920x1080 image.
+	byte rgb_jpg[NUMRGBBYTES];
+	//A shrunken 320x180 image for reference.
+	byte rgb_small_jpg[NUMRGBSMALLBYTES];
+	float depth[NUMDEPTHBYTES_WIDTH][NUMDEPTHBYTES_HEIGHT];
+	byte issourceupdating_rgb;
+	byte issourceupdating_sgb_small;
+	byte issourceupdating_depth;
+}
+
+//A frame for a single user which will be transferred to the ARNerve.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct kinect_body_update_t
+{
+	//The user name.
+	string username;
+	
+	byte istrackingbody;
+
+	// The torso information (root node)
+	kinect_joint_t torsoposition;
+	double forwardvec[3];
+	double upvec[3];
+	double rightvec[3];
+
+	// Information about the hands
+	byte is_rhandclosed;
+	byte is_lhandclosed;
+	kinect_joint_t rhandposition;
+	kinect_joint_t lhandposition;
+
+	// The head orientation
+	double headorientation[3];
+	kinect_joint_t headposition;
+
+	// The raw data frame
+	kinect_bodyframe_update_t joint_data;		
+}
+
+//A frame containing all the users, their bodyframes, and the camera data which can be transferred to ARNerve.
+struct kinect_update_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+	string devicename;
+
+	kinect_camera_update_t camera_update;
+	byte issourceupdating_camera;
+
+	int8_t NUMBODIES;
+	kinect_body_update_t bodies_update[NUMBODIES];
+	byte issourceupdating_bodies;
+}
+
+
+

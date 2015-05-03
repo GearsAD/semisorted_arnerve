@@ -1,0 +1,34 @@
+package semisorted_arnerve;
+
+//A frame for a user role request.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct role_request_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+
+	string userName;
+	const int8_t Observer = 0;
+	const int8_t Pilot = 1;
+	const int8_t Planner = 2;
+	const int8_t Commander = 3;
+
+	int8_t requestedRole;
+	int8_t isUpdatingRole;
+
+	string newPlannerGroup;
+	int8_t isUpdatingPlannerGroup;
+
+	string requestedBotNameToPilot;
+	int8_t isUpdatingBot;
+}
+
+//A frame for a user herder role response.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct role_response_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+
+	user_update_t originalRequest;
+
+	int8_t isAccepted;
+}

@@ -1,0 +1,13 @@
+package semisorted_arnerve;
+
+//A frame for the oculus update type.
+//Frame adapted from: http://lcm.googlecode.com/svn/www/reference/lcm/tut_lcmgen.html
+struct oculus_update_t
+{
+	int64_t timestamp; //The timestamp of the current frame in ms
+	byte issourceupdating;
+
+	// The head orientation
+	double headorientation[3];
+	double headposition[3];
+}
